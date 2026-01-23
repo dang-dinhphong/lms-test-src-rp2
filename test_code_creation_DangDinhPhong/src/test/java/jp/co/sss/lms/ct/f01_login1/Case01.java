@@ -1,15 +1,17 @@
 package jp.co.sss.lms.ct.f01_login1;
 
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+
+import jp.co.sss.lms.ct.util.Locators;
 
 /**
  * 結合テスト ログイン機能①
@@ -19,6 +21,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 @TestMethodOrder(OrderAnnotation.class)
 @DisplayName("ケース01 ログイン画面への遷移")
 public class Case01 {
+
+	private Locators locators;
 
 	/** 前処理 */
 	@BeforeAll
@@ -32,12 +36,30 @@ public class Case01 {
 		closeDriver();
 	}
 
+	/** 初期化
+	 * 
+	 * @author DangDinhPhong
+	 * */
+	@BeforeEach
+	void setUp() {
+		//webDriverをLocatorsに渡して、ページ要素をいつでも使えるように準備
+		this.locators = new Locators(webDriver);
+	}
+
 	@Test
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		// TODO ここに追加
-		get("http://localhost:8080/lms/");
+		/*
+		 * @author DangDinhPhong
+		 * */
+		goTo("http://localhost:8080/lms/");
+		locators.checkHeadTitle();
+		locators.checkLoginBtn();
+		locators.checkLoginLabel();
+		locators.checkPasswordLabel();
+		getEvidence(new Object() {
+		});
 	}
 
 }
