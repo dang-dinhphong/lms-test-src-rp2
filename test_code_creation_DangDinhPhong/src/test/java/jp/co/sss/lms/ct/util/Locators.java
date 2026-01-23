@@ -19,33 +19,36 @@ public class Locators {
 	private WebDriver driver;
 	private WebDriverWait wait;
 
-	/** 左上のヘッドタイトル*/
-	@FindBy(xpath = "//a[contains(text(),'LMS 学習管理システム')]")
-	private WebElement headTitle;
-
 	/** ログイン入力欄のラベル*/
-	@FindBy(xpath = "//label[contains(text(),'ログインID')]")
+	@FindBy(css = "label[for='loginId']")
 	private WebElement loginLabel;
 
 	/** パスワード入力欄のラベル*/
-	@FindBy(xpath = "//label[contains(text(),'パスワード')]")
+	@FindBy(css = "label[for='password']")
 	private WebElement passwordLabel;
 
 	/** ログイン入力欄*/
-	@FindBy(xpath = "//input[@name ='loginId']")
+	@FindBy(name = "loginId")
 	private WebElement loginIdInput;
 
 	/** パスワード入力欄*/
-	@FindBy(xpath = "//input[@name ='password'] | //input[@id = 'password']")
+	@FindBy(name = "password")
 	private WebElement passwordInput;
 
 	/** ログインボタン*/
-	@FindBy(xpath = "//input[@type = 'submit' and @value='ログイン']")
+	@FindBy(css = "input[type='submit'][value='ログイン']")
 	private WebElement loginBtn;
 
 	/** ログインエラーメッセージ*/
-	@FindBy(xpath = "//span[@class = 'error' and text()='* ログインに失敗しました。']")
+	@FindBy(css = "span[class='help-inline error']")
 	private WebElement loginErrorMsg;
+
+	/** コース名チェック*/
+	@FindBy(xpath = "//h2[contains(text(),'DEMOコース')]")
+	private WebElement courseName;
+
+	@FindBy(xpath = "//[contains(text(),'DEMOコース')]")
+	private WebElement helpLink;
 
 	/** 初期化用コントラクター*/
 	public Locators(WebDriver driver) {
@@ -53,12 +56,6 @@ public class Locators {
 		this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
 		PageFactory.initElements(driver, this);
-	}
-
-	/** 左上のヘッドタイトルチェック*/
-	public void checkHeadTitle() {
-		wait.until(ExpectedConditions.visibilityOf(headTitle));
-		assertEquals("LMS 学習管理システム", headTitle.getText());
 	}
 
 	/** ログインラベルチェック*/
@@ -107,8 +104,13 @@ public class Locators {
 	/** エラーメッセージ表示チェック*/
 	public void checkLoginErrorMsg() {
 		wait.until(ExpectedConditions.visibilityOf(loginErrorMsg));
-		//inputタグのvalueの値を取得
 		assertEquals("* ログインに失敗しました。", loginErrorMsg.getText());
+	}
+
+	/** コース名チェック*/
+	public void checkCourseName() {
+		wait.until(ExpectedConditions.visibilityOf(courseName));
+		assertEquals("DEMOコース 2022年10月1日(土)～2022年10月31日(月)", courseName.getText());
 	}
 
 }

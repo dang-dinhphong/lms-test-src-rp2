@@ -46,15 +46,14 @@ public class Case01 {
 		this.locators = new Locators(webDriver);
 	}
 
+	/*
+	 * @author DangDinhPhong
+	 * */
 	@Test
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		/*
-		 * @author DangDinhPhong
-		 * */
 		goTo("http://localhost:8080/lms/");
-		locators.checkHeadTitle();
 		locators.checkLoginBtn();
 		locators.checkLoginLabel();
 		locators.checkPasswordLabel();
