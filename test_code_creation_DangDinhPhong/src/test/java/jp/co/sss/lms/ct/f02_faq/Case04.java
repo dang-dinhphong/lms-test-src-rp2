@@ -95,12 +95,20 @@ public class Case04 {
 	@Order(3)
 	@DisplayName("テスト03 上部メニューの「ヘルプ」リンクからヘルプ画面に遷移")
 	void test03() {
+		/** 詳細画面 > 上部メニューの「機能」押下*/
+		locators.clickFeatureBtn();
+		/** 「機能」ボタンが展開し、ヘルプボタンが表示されるかチェック*/
+		locators.checkHelpBtn();
+		pageLoadTimeout(10);
+		getEvidence(new Object() {
+		}, "機能ボタン展開・ヘルプボタン確認");
+
 		locators.clickHelpLink();
 		pageLoadTimeout(10);
 		locators.checkHelpTitle();
 		locators.checkHelpMsg();
 		getEvidence(new Object() {
-		});
+		}, "ヘルプ画面タイトル確認");
 	}
 
 	/**
@@ -115,7 +123,7 @@ public class Case04 {
 		pageLoadTimeout(10);
 		locators.checkFAQTitle();
 		getEvidence(new Object() {
-		}, "よくある質問");
+		}, "よくある質問画面タイトル確認");
 	}
 
 }

@@ -49,6 +49,10 @@ public class Locators {
 	@FindBy(xpath = "//h2[contains(text(),'DEMOコース')]")
 	private WebElement courseName;
 
+	/** 上部のメニュー > 機能ボタン*/
+	@FindBy(xpath = "//a[@class = 'dropdown-toggle' and contains(text(),'機能')]")
+	private WebElement featureBtn;
+
 	/** ヘルプURLリンク*/
 	@FindBy(css = "a[href='/lms/help']")
 	private WebElement helpLink;
@@ -83,6 +87,10 @@ public class Locators {
 
 	@FindBy(css = "td[class = 'dataTables empty']")
 	private List<WebElement> emptyMsg;
+
+	/** よくある質問 > カテゴリ検索 > 【人材開発支援助成金】*/
+	@FindBy(css = "a[href='/lms/faq?frequentlyAskedQuestionCategoryId=2']")
+	private WebElement categoryHRDepSupportGrant;
 
 	/**
 	 * 初期化用コントラクター
@@ -160,8 +168,25 @@ public class Locators {
 		assertEquals("DEMOコース 2022年10月1日(土)～2022年10月31日(月)", courseName.getText());
 	}
 
-	/** ヘルプURLリンクをクリック*/
+	/** 上部メニュー > 機能ボタンを押下*/
+	public void clickFeatureBtn() {
+		try {
+			featureBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", featureBtn);
+		}
+	}
+
+	/** ヘルプボタン名チェック*/
+	public void checkHelpBtn() {
+		wait.until(ExpectedConditions.visibilityOf(helpLink));
+		assertEquals("ヘルプ", helpLink.getText());
+	}
+
 	public void clickHelpLink() {
+		wait.until(ExpectedConditions.visibilityOf(helpLink));
 		try {
 			helpLink.click();
 		} catch (Exception e) {
@@ -255,5 +280,9 @@ public class Locators {
 	public void clearSearch() {
 		faqKeywordInput.clear();
 		assertEquals("", faqKeywordInput.getText());
+	}
+
+	public void checkCategoryNo2() {
+
 	}
 }
