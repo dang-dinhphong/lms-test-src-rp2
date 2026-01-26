@@ -54,10 +54,11 @@ public class Case01 {
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
 		goTo("http://localhost:8080/lms/");
-		locators.checkLoginScreen();
-		pageLoadTimeout(10);
+		locators.checkLoginBtn();
+		locators.checkLoginLabel();
+		locators.checkPasswordLabel();
 		getEvidence(new Object() {
-		}, "ログイン画面");
+		});
 	}
 
 }
