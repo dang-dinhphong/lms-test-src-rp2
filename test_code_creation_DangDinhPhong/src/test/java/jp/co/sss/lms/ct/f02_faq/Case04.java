@@ -67,12 +67,14 @@ public class Case04 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
+		/** 環境変数を取得*/
 		String id = System.getenv("MY_LMS_AUTOTEST_LOGIN_ID");
 		String password = System.getenv("MY_LMS_AUTOTEST_PASSWORD");
 		if (id == null || password == null) {
 			System.out.println("環境変数が存在しません。確認してください。");
 			return;
 		}
+		/** ログインID・パスワードを自動入力*/
 		locators.typeLoginId(id);
 		locators.typePassword(password);
 		getEvidence(new Object() {
@@ -80,23 +82,40 @@ public class Case04 {
 
 		pageLoadTimeout(10);
 		locators.clickLoginBtn();
+
 		locators.checkCourseName();
 		getEvidence(new Object() {
 		}, "コース名確認");
 	}
 
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(3)
 	@DisplayName("テスト03 上部メニューの「ヘルプ」リンクからヘルプ画面に遷移")
 	void test03() {
-		// TODO ここに追加
+		locators.clickHelpLink();
+		pageLoadTimeout(10);
+		locators.checkHelpTitle();
+		locators.checkHelpMsg();
+		getEvidence(new Object() {
+		});
 	}
 
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(4)
 	@DisplayName("テスト04 「よくある質問」リンクからよくある質問画面を別タブに開く")
 	void test04() {
-		// TODO ここに追加
+
+		locators.clickFAQLink();
+		pageLoadTimeout(10);
+		locators.checkFAQTitle();
+		getEvidence(new Object() {
+		}, "よくある質問");
 	}
 
 }

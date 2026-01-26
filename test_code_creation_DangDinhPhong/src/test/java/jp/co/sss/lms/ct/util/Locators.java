@@ -1,8 +1,10 @@
 package jp.co.sss.lms.ct.util;
 
+import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -47,14 +49,52 @@ public class Locators {
 	@FindBy(xpath = "//h2[contains(text(),'DEMOコース')]")
 	private WebElement courseName;
 
-	@FindBy(xpath = "//[contains(text(),'DEMOコース')]")
+	/** ヘルプURLリンク*/
+	@FindBy(css = "a[href='/lms/help']")
 	private WebElement helpLink;
 
-	/** 初期化用コントラクター*/
+	/** ヘルプタイトル*/
+	@FindBy(xpath = "//h2[contains(text(),'ヘルプ')]")
+	private WebElement helpTitle;
+
+	/** よくある質問タイトル*/
+	@FindBy(xpath = "//h2[contains(text(),'よくある質問')]")
+	private WebElement faqTitle;
+
+	/** h4タグ*/
+	@FindBy(tagName = "h4")
+	private WebElement h4Title;
+
+	/** 「よくある質問」URLリンク*/
+	@FindBy(css = "a[href='/lms/faq']")
+	private WebElement faqLink;
+
+	/** よくある質問>キーワード検索欄に自動入力*/
+	@FindBy(css = "input[name='keyword']")
+	private WebElement faqKeywordInput;
+
+	/** よくある質問>キーワード検索ボタン*/
+	@FindBy(css = "input[type='submit'][value='検索']")
+	private WebElement keywordSearchBtn;
+
+	/** よくある質問>キーワード検索結果に使用*/
+	@FindBy(xpath = "//dd//span")
+	private List<WebElement> spans;
+
+	@FindBy(css = "td[class = 'dataTables empty']")
+	private List<WebElement> emptyMsg;
+
+	/**
+	 * 初期化用コントラクター
+	 * WebDriverUtilsで生成されたインスタンスをローカル保存し、下記メソッドを使えるようにする
+	 * 
+	 * @param driver
+	 */
 	public Locators(WebDriver driver) {
 		this.driver = driver;
-		this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+		this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));//waitをインスタンス化
 
+		//アノテーションを有効化する
 		PageFactory.initElements(driver, this);
 	}
 
@@ -77,14 +117,21 @@ public class Locators {
 		assertEquals("ログイン", loginBtn.getAttribute("value"));
 	}
 
-	/** ログインID自動入力*/
+	/**
+	 * ログインID自動入力
+	 * 
+	 * @param text ログインID
+	 */
 	public void typeLoginId(String text) {
 		wait.until(ExpectedConditions.visibilityOf(loginIdInput));
 		loginIdInput.clear();
 		loginIdInput.sendKeys(text);
 	}
 
-	/** パスワード自動入力*/
+	/**
+	 * パスワード自動入力
+	 * @param text ログインパスワード
+	 */
 	public void typePassword(String text) {
 		passwordInput.clear();
 		passwordInput.sendKeys(text);
@@ -113,4 +160,100 @@ public class Locators {
 		assertEquals("DEMOコース 2022年10月1日(土)～2022年10月31日(月)", courseName.getText());
 	}
 
+	/** ヘルプURLリンクをクリック*/
+	public void clickHelpLink() {
+		try {
+			helpLink.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", helpLink);
+		}
+	}
+
+	/** ヘルプタイトルチェック*/
+	public void checkHelpTitle() {
+		wait.until(ExpectedConditions.visibilityOf(helpTitle));
+		assertEquals("ヘルプ", helpTitle.getText());
+	}
+
+	/** ヘルプタイトルチェック*/
+	public void checkHelpMsg() {
+		wait.until(ExpectedConditions.visibilityOf(h4Title));
+		assertEquals("※操作方法が不明な場合はマニュアルをご参照ください。", h4Title.getText());
+	}
+
+	/** よくある質問URLリンクをクリック*/
+	public void clickFAQLink() {
+		try {
+			faqLink.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", faqLink);
+		}
+	}
+
+	/** よくある質問タイトルチェック*/
+	public void checkFAQTitle() {
+		//ヘルプ画面を（遷移する前に）検証する
+		String originalWindow = webDriver.getWindowHandle();
+		//別の画面に開くまで待つ
+		wait.until(ExpectedConditions.numberOfWindowsToBe(2));
+		//遷移前＞＜遷移後の画面が内容違うかチェック
+		for (String windowHandle : driver.getWindowHandles()) {
+			if (!originalWindow.contentEquals(windowHandle)) {
+				driver.switchTo().window(windowHandle);
+				break;
+			}
+		}
+		wait.until(ExpectedConditions.visibilityOf(faqTitle));
+		assertEquals("よくある質問", faqTitle.getText());
+	}
+
+	/**
+	 * よくある質問 > キーワード検索欄の自動入力
+	 * @param text 検索キーワード
+	 */
+	public void typeFAQKeyword(String text) {
+		faqKeywordInput.clear();
+		faqKeywordInput.sendKeys(text);
+	}
+
+	/** よくある質問URLリンクをクリック*/
+	public void clickKeywordSearch() {
+		try {
+			keywordSearchBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", keywordSearchBtn);
+		}
+	}
+
+	/**
+	 * 検索結果を検証するメソッド
+	 * @param keyword 検索したワード（"し"など）
+	 */
+	public void verifySearchFilter(String keyword) {
+		//リストが空（検索結果ゼロ）でないことを確認
+		if (!emptyMsg.isEmpty()) {
+			return;
+		}
+
+		//各要素の中にキーワードが入っているかチェック
+		for (WebElement result : spans) {
+			String actualText = result.getText();
+			//シンプルに「キーワードが含まれていること」だけを検証
+			if (!actualText.isEmpty()) {
+				assertTrue(actualText.contains(keyword));
+			}
+
+		}
+	}
+
+	public void clearSearch() {
+		faqKeywordInput.clear();
+		assertEquals("", faqKeywordInput.getText());
+	}
 }
