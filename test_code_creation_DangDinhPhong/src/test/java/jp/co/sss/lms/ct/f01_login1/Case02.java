@@ -75,6 +75,8 @@ public class Case02 {
 			System.out.println("環境変数が存在しません。確認してください。");
 			return;
 		}
+
+		/** ログインID・パスワードを自動入力*/
 		locators.typeLoginId(id);
 		locators.typePassword(password);
 		getEvidence(new Object() {
