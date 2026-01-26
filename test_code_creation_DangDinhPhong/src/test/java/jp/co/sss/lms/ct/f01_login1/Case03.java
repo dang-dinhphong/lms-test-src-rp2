@@ -53,11 +53,10 @@ public class Case03 {
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
 		goTo("http://localhost:8080/lms/");
-		locators.checkLoginBtn();
-		locators.checkLoginLabel();
-		locators.checkPasswordLabel();
+		locators.checkLoginScreen();
+		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		});
+		}, "ログイン画面");
 	}
 
 	/**
@@ -76,16 +75,11 @@ public class Case03 {
 		}
 
 		/** ログインID・パスワードを自動入力*/
-		locators.typeLoginId(id);
-		locators.typePassword(password);
-		getEvidence(new Object() {
-		}, "入力済");
-
+		locators.login(id, password);
 		pageLoadTimeout(10);
-		locators.clickLoginBtn();
 		locators.checkCourseName();
 		getEvidence(new Object() {
-		}, "コース名確認");
+		}, "コース詳細画面");
 	}
 
 }

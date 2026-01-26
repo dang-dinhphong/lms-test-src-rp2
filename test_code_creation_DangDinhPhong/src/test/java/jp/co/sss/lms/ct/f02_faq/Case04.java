@@ -53,11 +53,10 @@ public class Case04 {
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
 		goTo("http://localhost:8080/lms/");
-		locators.checkLoginBtn();
-		locators.checkLoginLabel();
-		locators.checkPasswordLabel();
+		locators.checkLoginScreen();
+		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		});
+		}, "ログイン画面");
 	}
 
 	/**
@@ -74,18 +73,13 @@ public class Case04 {
 			System.out.println("環境変数が存在しません。確認してください。");
 			return;
 		}
+
 		/** ログインID・パスワードを自動入力*/
-		locators.typeLoginId(id);
-		locators.typePassword(password);
-		getEvidence(new Object() {
-		}, "入力済");
-
+		locators.login(id, password);
 		pageLoadTimeout(10);
-		locators.clickLoginBtn();
-
 		locators.checkCourseName();
 		getEvidence(new Object() {
-		}, "コース名確認");
+		}, "コース詳細画面");
 	}
 
 	/**
@@ -95,20 +89,10 @@ public class Case04 {
 	@Order(3)
 	@DisplayName("テスト03 上部メニューの「ヘルプ」リンクからヘルプ画面に遷移")
 	void test03() {
-		/** 詳細画面 > 上部メニューの「機能」押下*/
-		locators.clickFeatureBtn();
-		/** 「機能」ボタンが展開し、ヘルプボタンが表示されるかチェック*/
-		locators.checkHelpBtn();
+		locators.clickHelp();
 		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		}, "機能ボタン展開・ヘルプボタン確認");
-
-		locators.clickHelpLink();
-		pageLoadTimeout(10);
-		locators.checkHelpTitle();
-		locators.checkHelpMsg();
-		getEvidence(new Object() {
-		}, "ヘルプ画面タイトル確認");
+		}, "ヘルプ画面");
 	}
 
 	/**
@@ -118,12 +102,10 @@ public class Case04 {
 	@Order(4)
 	@DisplayName("テスト04 「よくある質問」リンクからよくある質問画面を別タブに開く")
 	void test04() {
-
-		locators.clickFAQLink();
+		locators.clickFAQ();
 		pageLoadTimeout(10);
-		locators.checkFAQTitle();
 		getEvidence(new Object() {
-		}, "よくある質問画面タイトル確認");
+		}, "よくある質問画面");
 	}
 
 }
