@@ -53,11 +53,10 @@ public class Case03 {
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
 		goTo("http://localhost:8080/lms/");
-		locators.checkLoginBtn();
-		locators.checkLoginLabel();
-		locators.checkPasswordLabel();
+		locators.checkLoginScreen();
+		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		});
+		}, "ログイン画面");
 	}
 
 	/**
@@ -67,25 +66,12 @@ public class Case03 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		/** 環境変数を取得*/
-		String id = System.getenv("MY_LMS_AUTOTEST_LOGIN_ID");
-		String password = System.getenv("MY_LMS_AUTOTEST_PASSWORD");
-		if (id == null || password == null) {
-			System.out.println("環境変数が存在しません。確認してください。");
-			return;
-		}
-
 		/** ログインID・パスワードを自動入力*/
-		locators.typeLoginId(id);
-		locators.typePassword(password);
-		getEvidence(new Object() {
-		}, "入力済");
-
+		locators.login();
 		pageLoadTimeout(10);
-		locators.clickLoginBtn();
 		locators.checkCourseName();
 		getEvidence(new Object() {
-		}, "コース名確認");
+		}, "コース詳細画面");
 	}
 
 }
