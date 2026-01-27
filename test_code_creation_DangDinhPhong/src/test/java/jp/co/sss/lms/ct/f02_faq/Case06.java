@@ -84,7 +84,7 @@ public class Case06 {
 		locators.clickHelp();
 		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		}, "ヘルプ画面タイトル確認");
+		}, "ヘルプ画面");
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class Case06 {
 		locators.clickFAQ();
 		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		}, "よくある質問画面タイトル確認");
+		}, "よくある質問画面");
 	}
 
 	/**
@@ -107,7 +107,10 @@ public class Case06 {
 	@Order(5)
 	@DisplayName("テスト05 カテゴリ検索で該当カテゴリの検索結果だけ表示")
 	void test05() {
-
+		locators.testCategory();
+		pageLoadTimeout(10);
+		getEvidence(new Object() {
+		}, "よくある質問画面_カテゴリ検索_結果");
 	}
 
 	/**
@@ -117,7 +120,9 @@ public class Case06 {
 	@Order(6)
 	@DisplayName("テスト06 検索結果の質問をクリックしその回答を表示")
 	void test06() {
-
+		locators.testCategoryResultCheck();
+		getEvidence(new Object() {
+		}, "よくある質問画面_カテゴリ検索_結果詳細");
 	}
 
 }

@@ -93,11 +93,16 @@ public class Locators {
 	private WebElement categoryJobTraining;
 
 	/** よくある質問 > カテゴリ検索 > 【研修関係】の2番目の結果*/
-	@FindBy(xpath = "//tbody//tr:ntn-of-child(2)//")
+	@FindBy(css = "tbody tr:nth-child(2) dt span:nth-child(2)")
+
 	private WebElement jobTrainingSecondResult;
 
+	/** よくある質問 > カテゴリ検索 > 【研修関係】の2番目の結果*/
+	@FindBy(css = "tbody tr:nth-child(2) dd span:nth-child(2)")
+	private WebElement jobTrainingSecondResultDetail;
+
 	/** よくある質問 > カテゴリ検索 > 【研修関係】 > 検索結果数のメッセージ*/
-	@FindBy(css = "div[class = 'dataTables info']")
+	@FindBy(id = "DataTables_Table_0_info")
 	private WebElement jobTrainingResultsMsg;
 
 	/**
@@ -274,10 +279,9 @@ public class Locators {
 			return;
 		}
 
-		//各要素の中にキーワードが入っているか確認
+		/** 各要素の中にキーワードが入っているか確認*/
 		for (WebElement result : spans) {
 			String actualText = result.getText();
-			//シンプルに「キーワードが含まれていること」だけを検証
 			if (!actualText.isEmpty()) {
 				assertTrue(actualText.contains(keyword));
 			}
@@ -300,9 +304,19 @@ public class Locators {
 		categoryJobTraining.click();
 
 		scrollTo("500");
+		wait.until(ExpectedConditions.visibilityOf(jobTrainingSecondResult));
 
-		wait.until(ExpectedConditions.visibilityOf(jobTrainingResultsMsg));
+		assertEquals("研修の申し込みはどのようにすれば良いですか？", jobTrainingSecondResult.getText());
 		assertEquals("2 件中 1 件から 2 件までを表示", jobTrainingResultsMsg.getText());
 
+	}
+
+	/** 【研修関係】リンクを押下 > 検索結果を確認*/
+	public void testCategoryResultCheck() {
+		jobTrainingSecondResult.click();
+		scrollTo("500");
+		wait.until(ExpectedConditions.visibilityOf(jobTrainingSecondResultDetail));
+		assertEquals("営業担当がいる場合は、営業担当までご連絡ください。 申し込み方法についてご案内させていただきます。 なお、弊社営業営業がいない場合は、東京ITスクール運営事務局までご連絡いただけると幸いです。",
+				jobTrainingSecondResultDetail.getText());
 	}
 }
