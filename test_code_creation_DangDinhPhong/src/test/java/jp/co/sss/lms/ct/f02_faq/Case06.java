@@ -56,7 +56,7 @@ public class Case06 {
 		locators.checkLoginScreen();
 		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		});
+		}, "ログイン画面");
 	}
 
 	/**
@@ -66,12 +66,11 @@ public class Case06 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		/** ログインID・パスワードを自動入力*/
 		locators.login();
 		pageLoadTimeout(10);
 		locators.checkCourseName();
 		getEvidence(new Object() {
-		}, "コース名確認");
+		}, "コース詳細画面");
 	}
 
 	/**
