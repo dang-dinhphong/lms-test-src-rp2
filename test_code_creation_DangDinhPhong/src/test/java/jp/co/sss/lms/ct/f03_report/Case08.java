@@ -114,7 +114,7 @@ public class Case08 {
 	void test07() {
 		locators.checkWeeklyReportChange();
 		getEvidence(new Object() {
-		}, "レポート登録画面");
+		}, "レポート詳細画面_週報");
 	}
 
 }
