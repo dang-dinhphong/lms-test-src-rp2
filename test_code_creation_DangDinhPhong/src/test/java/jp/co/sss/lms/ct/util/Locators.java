@@ -104,42 +104,43 @@ public class Locators {
 	@FindBy(id = "DataTables_Table_0_info")
 	private WebElement jobTrainingResultsMsg;
 
-	/** 「提出済」ステータス*/
-	/** 一度テスト行うと「提出済」となるためテスト失敗となる*/
-	@FindBy(xpath = "//*[@id='main']/div/div[3]/div[2]/table/tbody/tr[1]/td[3]/span")
-	private WebElement unsubmittedStatus;
+	/** Case07*/
+
+	/** 「未提出」ステータス*/
+	/** 一度テスト行うと「提出済」となる
+	 *  > テストに失敗しないようにDB初期化が必要*/
+	@FindBy(xpath = "((//*[@id='main']//table)[2]//span[text()='未提出'])[1]")
+	private WebElement notSubmitStatus;
 
 	/** 「提出済」ステータスの研修日の「詳細」ボタン*/
-	@FindBy(xpath = "//*[@id=\"main\"]/div/div[3]/div[2]/table/tbody/tr[1]/td[5]/form/input[3]")
-
-	private WebElement unsubmittedDetailBtn;
+	@FindBy(xpath = "(//tr[descendant::span[text()='未提出']]//input[@value='詳細'])[1]")
+	private WebElement notSubmitDetailBtn;
 
 	/** 上部_タイトル:コース詳細*/
 	@FindBy(css = "a[href='/lms/course/detail?courseId=1']")
-	private WebElement beforeTopName;
+	private WebElement courseTitle;
 
 	/** 上部_タイトル:セクション詳細*/
 	@FindBy(css = "li[class ='active']")
-	private WebElement afterTopName;
+	private WebElement sectionTitle;
 
-	/** 上部_メインタイトル*/
-	@FindBy(xpath = "//*[@id='sectionDetail']/h2")
-	private WebElement classTitle;
-
-	/** レポートを提出するボタン*/
+	/** 未提出：   「日報【デモ】を提出する」ボタン*/
+	/** 提出後： > 「提出済み【デモ】を確認する」ボタン*/
 	@FindBy(css = "input[type = 'submit']")
-	private WebElement dateSubmitBtn;
+	private WebElement submitDailyReportBtn;
 
 	/** 日報提出画面の上部タイトル*/
 	@FindBy(xpath = "//*[@id='main']/h2")
-	private WebElement dateSubmitTitle;
+	private WebElement dailyReportTitle;
 
-	/** レポート登録の入力欄*/
-	@FindBy(className = "form-control")
-	private WebElement reportForm;
-	/** レポート登録時の「提出」ボタン*/
+	/** 日報レポート登録の入力欄*/
+	@FindBy(id = "content_0")
+	private WebElement dailyReportForm;
+
+	/** 未提出：   「提出」ボタン*/
+	/** 提出後： > 「」ボタン*/
 	@FindBy(css = "button[type='submit']")
-	private WebElement reportSubmitBtn;
+	private WebElement submitBtn;
 
 	/**
 	 * 初期化用コントラクター
@@ -323,7 +324,6 @@ public class Locators {
 				assertTrue(actualText.contains(keyword));
 			}
 		}
-
 		/** 下部にスクロール*/
 		scrollTo("500");
 
@@ -357,55 +357,63 @@ public class Locators {
 				jobTrainingSecondResultDetail.getText());
 	}
 
-	/** 未提出ステータスの日付の詳細ボタン押下*/
-	public void clickUnsummited() {
-		wait.until(ExpectedConditions.visibilityOf(unsubmittedDetailBtn));
-		assertEquals("未提出", unsubmittedStatus.getText());
-		assertEquals("詳細", unsubmittedDetailBtn.getAttribute("value"));
+	/** Case07*/
+	/** 未提出「日報」登録*/
+
+	/** 「未提出」ステータスの日付の「詳細」ボタン押下*/
+	public void clickUnsubmitted() {
+		wait.until(ExpectedConditions.visibilityOf(notSubmitDetailBtn));
+		assertEquals("未提出", notSubmitStatus.getText());
+		assertEquals("詳細", notSubmitDetailBtn.getAttribute("value"));
 
 		try {
-			unsubmittedDetailBtn.click();
+			notSubmitDetailBtn.click();
 		} catch (Exception e) {
 			//JavaScriptでボタン強制押下
 			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", unsubmittedDetailBtn);
+			js.executeScript("arguments[0].click();", notSubmitDetailBtn);
 		}
 
-		assertEquals("コース詳細", beforeTopName.getText());
-		assertEquals("セクション詳細", afterTopName.getText());
-		assertEquals("日報【デモ】を提出する", dateSubmitBtn.getAttribute("value"));
+		wait.until(ExpectedConditions.visibilityOf(courseTitle));
+		assertEquals("コース詳細", courseTitle.getText());
+		assertEquals("セクション詳細", sectionTitle.getText());
+		assertEquals("日報【デモ】を提出する", submitDailyReportBtn.getAttribute("value"));
 	}
 
-	/** 日報提出ボタン押下*/
-	public void dateSubmit() {
-		wait.until(ExpectedConditions.visibilityOf(dateSubmitBtn));
+	/** 「日報【デモ】を提出する」ボタン押下*/
+	public void clickDailyReportSubmitBtn() {
+		wait.until(ExpectedConditions.visibilityOf(submitDailyReportBtn));
 
 		try {
-			dateSubmitBtn.click();
+			submitDailyReportBtn.click();
 		} catch (Exception e) {
 			//JavaScriptでボタン強制押下
 			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", dateSubmitBtn);
+			js.executeScript("arguments[0].click();", submitDailyReportBtn);
 		}
-		assertEquals("日報【デモ】 2022年10月5日", dateSubmitTitle.getText());
+		assertEquals("日報【デモ】 2022年10月5日", dailyReportTitle.getText());
 	}
 
 	/**
-	 * レポート登録
-	 * @param report レポート内容
+	 * 未登録の日報を登録
+	 * @param report 日報内容
 	 */
-	public void reportSubmit(String report) {
-		reportForm.clear();
-		reportForm.sendKeys(report);
-
+	public void submitDailyReport(String report) {
+		dailyReportForm.clear();
+		dailyReportForm.sendKeys(report);
 		try {
-			reportSubmitBtn.click();
+			submitBtn.click();
 		} catch (Exception e) {
 			//JavaScriptでボタン強制押下
 			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", reportSubmitBtn);
+			js.executeScript("arguments[0].click();", submitBtn);
 		}
-		wait.until(ExpectedConditions.visibilityOf(dateSubmitBtn));
-		assertEquals("提出済み日報【デモ】を確認する", dateSubmitBtn.getAttribute("value"));
+		wait.until(ExpectedConditions.visibilityOf(submitDailyReportBtn));
+
+		/** 「日報【デモ】を提出する」ボタン > 「提出済み【デモ】を確認する」ボタン*/
+		assertEquals("提出済み日報【デモ】を確認する", submitDailyReportBtn.getAttribute("value"));
 	}
+
+	/** Case08*/
+	/** 提出済み週報の確認と変更*/
 }

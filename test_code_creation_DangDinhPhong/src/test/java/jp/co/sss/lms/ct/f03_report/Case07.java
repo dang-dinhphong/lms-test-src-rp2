@@ -78,17 +78,17 @@ public class Case07 {
 	@Order(3)
 	@DisplayName("テスト03 未提出の研修日の「詳細」ボタンを押下しセクション詳細画面に遷移")
 	void test03() {
-		locators.clickUnsummited();
+		locators.clickUnsubmitted();
 		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		}, "セクション詳細画面_未提出");
+		}, "セクション詳細画面_未提出_ボタン名");
 	}
 
 	@Test
 	@Order(4)
 	@DisplayName("テスト04 「提出する」ボタンを押下しレポート登録画面に遷移")
 	void test04() {
-		locators.dateSubmit();
+		locators.clickDailyReportSubmitBtn();
 		pageLoadTimeout(10);
 		getEvidence(new Object() {
 		}, "レポート登録画面");
@@ -100,10 +100,10 @@ public class Case07 {
 	void test05() {
 		/** レポート内容*/
 		String myReport = "本日の研修を終了します";
-		locators.reportSubmit(myReport);
+		locators.submitDailyReport(myReport);
 		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		}, "セクション詳細画面_提出済み");
+		}, "セクション詳細画面_提出済み_ボタン名変更");
 	}
 
 }

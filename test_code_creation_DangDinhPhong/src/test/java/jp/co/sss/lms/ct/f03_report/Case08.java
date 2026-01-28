@@ -4,11 +4,14 @@ import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+
+import jp.co.sss.lms.ct.util.Locators;
 
 /**
  * 結合テスト レポート機能
@@ -18,6 +21,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 @TestMethodOrder(OrderAnnotation.class)
 @DisplayName("ケース08 受講生 レポート修正(週報) 正常系")
 public class Case08 {
+
+	public Locators locators;
 
 	/** 前処理 */
 	@BeforeAll
@@ -31,25 +36,48 @@ public class Case08 {
 		closeDriver();
 	}
 
+	/** 初期化
+	 * 
+	 * @author DangDinhPhong
+	 * */
+	@BeforeEach
+	void setUp() {
+		//webDriverをLocatorsに渡して、ページ要素をいつでも使えるように準備
+		this.locators = new Locators(webDriver);
+	}
+
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		// TODO ここに追加
+		goTo("http://localhost:8080/lms/");
+		locators.checkLoginScreen();
+		pageLoadTimeout(10);
+		getEvidence(new Object() {
+		}, "ログイン画面");
 	}
 
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		// TODO ここに追加
+		locators.login();
+		pageLoadTimeout(10);
+		locators.checkCourseName();
+		getEvidence(new Object() {
+		}, "コース詳細画面");
 	}
 
 	@Test
 	@Order(3)
 	@DisplayName("テスト03 提出済の研修日の「詳細」ボタンを押下しセクション詳細画面に遷移")
 	void test03() {
-		// TODO ここに追加
 	}
 
 	@Test
