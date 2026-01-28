@@ -1,5 +1,6 @@
 package jp.co.sss.lms.ct.util;
 
+import static jp.co.sss.lms.ct.util.Constant.*;
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -105,7 +106,6 @@ public class Locators {
 	private WebElement jobTrainingResultsMsg;
 
 	/** Case07*/
-
 	/** 「未提出」ステータス*/
 	/** 一度テスト行うと「提出済」となる
 	 *  > テストに失敗しないようにDB初期化が必要*/
@@ -129,18 +129,91 @@ public class Locators {
 	@FindBy(css = "input[type = 'submit']")
 	private WebElement submitDailyReportBtn;
 
-	/** 日報提出画面の上部タイトル*/
-	@FindBy(xpath = "//*[@id='main']/h2")
-	private WebElement dailyReportTitle;
+	/** レポート提出画面の上部タイトル*/
+	@FindBy(xpath = "//*[@id='main']//h2")
+	private WebElement mainTopTitle;
+
+	/** 画面の上部H3見出し*/
+	@FindBy(xpath = "//*[@id='main']//h3")
+	private WebElement subTopTitle;
 
 	/** 日報レポート登録の入力欄*/
 	@FindBy(id = "content_0")
 	private WebElement dailyReportForm;
 
 	/** 未提出：   「提出」ボタン*/
-	/** 提出後： > 「」ボタン*/
 	@FindBy(css = "button[type='submit']")
 	private WebElement submitBtn;
+
+	/** Case08*/
+	/** 「提出済み」ステータス*/
+	@FindBy(xpath = "((//*[@id='main']//table)[1]//span[text()='提出済み'])[2]")
+	private WebElement submittedStatus;
+
+	/** 「提出済」ステータスの研修日の「詳細」ボタン*/
+	@FindBy(xpath = "(//tr[descendant::span[text()='提出済み']]//input[@value='詳細'])[2]")
+	private WebElement submittedDetailBtn;
+
+	@FindBy(css = "input[type='submit'][value*='週報']")
+	private WebElement submitWeeklyReportBtn;
+
+	/** 週報の修正項目ロケータ*/
+	/** 理解度ドロップダウンリスト*/
+	@FindBy(id = "intFieldValue_0")
+	private WebElement understandingList;
+
+	/** 理解度選択肢*/
+	@FindBy(css = "option[value = '3']")
+	private WebElement understanding;
+
+	/** 目標の達成度*/
+	@FindBy(id = "content_0")
+	private WebElement achieveLvl;
+
+	/** 所感*/
+	@FindBy(id = "content_1")
+	private WebElement impression;
+
+	/** 一週間の振り返り*/
+	@FindBy(id = "content_2")
+	private WebElement weeklyRevision;
+
+	/** ようこそ、○○さんボタン*/
+	@FindBy(css = "a[href='/lms/user/detail']")
+	private WebElement userDetailBtn;
+
+	/** ユーザ詳細画面 > 週報【デモ】*/
+	/** 同じ日付を持つのは2行（週報と日報） > 「週報」とリンクする日付のロケータ指定*/
+	@FindBy(xpath = "//td[contains(text(), '週報【デモ】')]/ancestor::tr/td[1]")
+	private WebElement userWeeklyReportDate;
+
+	/** ユーザ詳細画面 > 週報【デモ】*/
+	@FindBy(xpath = "//td[contains(text(), '週報【デモ】')]")
+	private WebElement userWeeklyReportName;
+
+	/** ユーザ詳細画面 > 週報【デモ】 > 「詳細」ボタン*/
+	@FindBy(xpath = "//tr[descendant::td[contains(text(), '週報【デモ】')]]//input[@value='詳細']")
+	private WebElement userWeeklyDetailBtn;
+
+	/** 週報【デモ】詳細画面 > 理解度（1段階評価）タイトル*/
+	@FindBy(xpath = "(//table[@class = 'table table-hover'])[2]//th[2]")
+	private WebElement understandingTitle;
+
+	/** 週報【デモ】詳細画面 > 理解度（1段階評価）*/
+	@FindBy(xpath = "(//table[@class = 'table table-hover'])[2]//td[2]/p")
+	private WebElement understandingCheck;
+
+	/** 週報【デモ】詳細画面 > 目標達成度*/
+	@FindBy(xpath = "(//table[@class = 'table table-hover'])[3]//tr[1]/td")
+	private WebElement achieveLvlCheck;
+
+	/** 週報【デモ】詳細画面 > 所感*/
+	@FindBy(xpath = "(//table[@class = 'table table-hover'])[3]//tr[2]/td")
+	private WebElement impressCheck;
+
+	/** 週報【デモ】詳細画面 > 一週間の振り返り*/
+	@FindBy(xpath = "(//table[@class = 'table table-hover'])[3]//tr[3]/td")
+	private WebElement weekRevisionCheck;
 
 	/**
 	 * 初期化用コントラクター
@@ -159,6 +232,7 @@ public class Locators {
 
 	/** ログインラベル確認*/
 	public void checkLoginScreen() {
+		goTo("http://localhost:8080/lms/");
 		wait.until(ExpectedConditions.visibilityOf(loginLabel));
 		assertEquals("ログインID", loginLabel.getText());
 		/** パスワードラベル確認*/
@@ -168,6 +242,7 @@ public class Locators {
 		wait.until(ExpectedConditions.visibilityOf(loginBtn));
 		//inputタグのvalueの値を取得
 		assertEquals("ログイン", loginBtn.getAttribute("value"));
+		pageLoadTimeout(10);
 	}
 
 	/**
@@ -191,12 +266,12 @@ public class Locators {
 			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
 			js.executeScript("arguments[0].click();", loginBtn);
 		}
-	}
 
-	/** ログイン失敗時、エラーメッセージ表示確認*/
-	public void checkLoginErrorMsg() {
+		/** ログイン失敗時、エラーメッセージ表示確認*/
 		wait.until(ExpectedConditions.visibilityOf(loginErrorMsg));
 		assertEquals("* ログインに失敗しました。", loginErrorMsg.getText());
+
+		pageLoadTimeout(10);
 	}
 
 	/**
@@ -225,10 +300,8 @@ public class Locators {
 			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
 			js.executeScript("arguments[0].click();", loginBtn);
 		}
-	}
 
-	/** コース名確認*/
-	public void checkCourseName() {
+		/** コース名確認*/
 		wait.until(ExpectedConditions.visibilityOf(courseName));
 		assertEquals("DEMOコース 2022年10月1日(土)～2022年10月31日(月)", courseName.getText());
 	}
@@ -265,6 +338,7 @@ public class Locators {
 		/** ヘルプタイトル確認*/
 		wait.until(ExpectedConditions.visibilityOf(h4Title));
 		assertEquals("※操作方法が不明な場合はマニュアルをご参照ください。", h4Title.getText());
+		pageLoadTimeout(10);
 	}
 
 	/** よくある質問URLリンクを押下し、遷移したか確認*/
@@ -292,13 +366,15 @@ public class Locators {
 		//よくある質問タイトル確認
 		wait.until(ExpectedConditions.visibilityOf(faqTitle));
 		assertEquals("よくある質問", faqTitle.getText());
+		pageLoadTimeout(10);
 	}
 
 	/**
 	 * よくある質問 > キーワード検索欄の自動入力 > 「検索」ボタン押下
 	 * @param keyword 検索キーワード
 	 */
-	public void keywordSearch(String keyword) {
+	public void keywordSearch() {
+		String keyword = "手続き";
 		faqKeywordInput.clear();
 		faqKeywordInput.sendKeys(keyword);
 
@@ -326,6 +402,7 @@ public class Locators {
 		}
 		/** 下部にスクロール*/
 		scrollTo("500");
+		pageLoadTimeout(10);
 
 	}
 
@@ -346,23 +423,24 @@ public class Locators {
 		assertEquals("研修の申し込みはどのようにすれば良いですか？", jobTrainingSecondResult.getText());
 		assertEquals("2 件中 1 件から 2 件までを表示", jobTrainingResultsMsg.getText());
 
+		pageLoadTimeout(10);
 	}
 
 	/** 【研修関係】リンクを押下 > 検索結果を確認*/
-	public void testCategoryResultCheck() {
+	public void testCategoryDetailCheck() {
 		jobTrainingSecondResult.click();
 		scrollTo("500");
 		wait.until(ExpectedConditions.visibilityOf(jobTrainingSecondResultDetail));
 		assertEquals("営業担当がいる場合は、営業担当までご連絡ください。 申し込み方法についてご案内させていただきます。 なお、弊社営業営業がいない場合は、東京ITスクール運営事務局までご連絡いただけると幸いです。",
 				jobTrainingSecondResultDetail.getText());
+		pageLoadTimeout(10);
 	}
 
 	/** Case07*/
 	/** 未提出「日報」登録*/
-
 	/** 「未提出」ステータスの日付の「詳細」ボタン押下*/
 	public void clickUnsubmitted() {
-		wait.until(ExpectedConditions.visibilityOf(notSubmitDetailBtn));
+		wait.until(ExpectedConditions.visibilityOf(notSubmitStatus));
 		assertEquals("未提出", notSubmitStatus.getText());
 		assertEquals("詳細", notSubmitDetailBtn.getAttribute("value"));
 
@@ -378,6 +456,8 @@ public class Locators {
 		assertEquals("コース詳細", courseTitle.getText());
 		assertEquals("セクション詳細", sectionTitle.getText());
 		assertEquals("日報【デモ】を提出する", submitDailyReportBtn.getAttribute("value"));
+
+		pageLoadTimeout(10);
 	}
 
 	/** 「日報【デモ】を提出する」ボタン押下*/
@@ -391,14 +471,15 @@ public class Locators {
 			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
 			js.executeScript("arguments[0].click();", submitDailyReportBtn);
 		}
-		assertEquals("日報【デモ】 2022年10月5日", dailyReportTitle.getText());
+		assertEquals("日報【デモ】 2022年10月5日", mainTopTitle.getText());
 	}
 
 	/**
-	 * 未登録の日報を登録
+	 * 未提出の日報を登録
 	 * @param report 日報内容
 	 */
-	public void submitDailyReport(String report) {
+	public void submitDailyReport() {
+		String report = "本日の研修を終了します";
 		dailyReportForm.clear();
 		dailyReportForm.sendKeys(report);
 		try {
@@ -412,8 +493,145 @@ public class Locators {
 
 		/** 「日報【デモ】を提出する」ボタン > 「提出済み【デモ】を確認する」ボタン*/
 		assertEquals("提出済み日報【デモ】を確認する", submitDailyReportBtn.getAttribute("value"));
+		pageLoadTimeout(10);
 	}
 
 	/** Case08*/
 	/** 提出済み週報の確認と変更*/
+	public void clickSubmitted() {
+		wait.until(ExpectedConditions.visibilityOf(submittedStatus));
+		assertEquals("提出済み", submittedStatus.getText());
+		assertEquals("詳細", submittedDetailBtn.getAttribute("value"));
+
+		try {
+			submittedDetailBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", submittedDetailBtn);
+		}
+
+		wait.until(ExpectedConditions.visibilityOf(courseTitle));
+		assertEquals("コース詳細", courseTitle.getText());
+		assertEquals("セクション詳細", sectionTitle.getText());
+		assertEquals("提出済み週報【デモ】を確認する", submitWeeklyReportBtn.getAttribute("value"));
+		pageLoadTimeout(10);
+	}
+
+	/** 「提出済み週報【デモ】を提出する」ボタン押下*/
+	public void clickWeeklyReportSubmitBtn() {
+		wait.until(ExpectedConditions.visibilityOf(submitWeeklyReportBtn));
+
+		try {
+			submitWeeklyReportBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", submitWeeklyReportBtn);
+		}
+		assertEquals("週報【デモ】 2022年10月2日", mainTopTitle.getText());
+		pageLoadTimeout(10);
+	}
+
+	/**
+	 * 提出済みの週報を変更
+	 * @param report 日報内容
+	 */
+	public void submitWeeklyReport() {
+		wait.until(ExpectedConditions.visibilityOf(understandingList));
+		;
+		/** 理解度*/
+		/** 理解度ドロップダウンリスト押下*/
+		try {
+			understandingList.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", understandingList);
+		}
+		/** 理解度選択肢押下*/
+		try {
+			understanding.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", understanding);
+		}
+
+		scrollTo("500");
+		/** 所感*/
+		String impress = "【変更】週報の変更です。";
+		/** 一週間の振り返り*/
+		String weekly = "【変更】日報・週報などの入力項目は管理者権限で変更することが可能です。"
+				+ "「週報」の入力項目は管理画面のレポート作成機能を用いて設定し、変更されたレポートのフォーマットはデータベースの「m_weekly_report」テーブルに登録されています。";
+
+		/** 目標達成度*/
+		achieveLvl.clear();
+		achieveLvl.sendKeys(ACHIEVE);
+
+		/** 所感*/
+		impression.clear();
+		impression.sendKeys(impress);
+
+		/** 一週間の振り返り*/
+		weeklyRevision.clear();
+		weeklyRevision.sendKeys(weekly);
+
+		try {
+			submitBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", submitBtn);
+		}
+
+		wait.until(ExpectedConditions.visibilityOf(courseTitle));
+		assertEquals("コース詳細", courseTitle.getText());
+		assertEquals("セクション詳細", sectionTitle.getText());
+		assertEquals("アルゴリズム、フローチャート 2022年10月2日", mainTopTitle.getText());
+		pageLoadTimeout(10);
+	}
+
+	public void gotoUserDetail() {
+		wait.until(ExpectedConditions.visibilityOf(userDetailBtn));
+		/** 「ようこそ、○○さん」ボタン押下*/
+		try {
+			userDetailBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", userDetailBtn);
+		}
+		wait.until(ExpectedConditions.visibilityOf(subTopTitle));
+		assertEquals("ユーザー詳細", mainTopTitle.getText());
+		assertEquals("基本情報", subTopTitle.getText());
+		pageLoadTimeout(10);
+	}
+
+	public void checkWeeklyReportChange() {
+		scrollTo("500");
+		assertEquals("2022年10月2日(日)", userWeeklyReportDate.getText());
+		assertEquals("週報【デモ】", userWeeklyReportName.getText());
+		assertEquals("詳細", userWeeklyDetailBtn.getAttribute("value"));
+
+		try {
+			userWeeklyDetailBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", userWeeklyDetailBtn);
+		}
+
+		/** レポート詳細画面遷移*/
+		wait.until(ExpectedConditions.visibilityOf(understandingTitle));
+		assertEquals(COMPRE_LVL, understandingCheck.getText());
+		assertEquals(ACHIEVE, achieveLvlCheck.getText());
+		assertEquals("【変更】週報の変更です。", impressCheck.getText());
+		assertEquals(
+				"【変更】日報・週報などの入力項目は管理者権限で変更することが可能です。「週報」の入力項目は管理画面のレポート作成機能を用いて設定し、変更されたレポートのフォーマットはデータベースの「m_weekly_report」テーブルに登録されています。",
+				weekRevisionCheck.getText());
+		pageLoadTimeout(10);
+
+	}
+
 }

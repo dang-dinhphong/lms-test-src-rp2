@@ -1,5 +1,6 @@
 package jp.co.sss.lms.ct.f02_faq;
 
+import static jp.co.sss.lms.ct.util.Constant.*;
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 
 import org.junit.jupiter.api.AfterAll;
@@ -52,11 +53,9 @@ public class Case06 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		goTo("http://localhost:8080/lms/");
 		locators.checkLoginScreen();
-		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		}, "ログイン画面");
+		}, ACCESS_LMS);
 	}
 
 	/**
@@ -67,10 +66,8 @@ public class Case06 {
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
 		locators.login();
-		pageLoadTimeout(10);
-		locators.checkCourseName();
 		getEvidence(new Object() {
-		}, "コース詳細画面");
+		}, COURSE_DETAIL);
 	}
 
 	/**
@@ -81,7 +78,6 @@ public class Case06 {
 	@DisplayName("テスト03 上部メニューの「ヘルプ」リンクからヘルプ画面に遷移")
 	void test03() {
 		locators.clickHelp();
-		pageLoadTimeout(10);
 		getEvidence(new Object() {
 		}, "ヘルプ画面");
 	}
@@ -94,7 +90,6 @@ public class Case06 {
 	@DisplayName("テスト04 「よくある質問」リンクからよくある質問画面を別タブに開く")
 	void test04() {
 		locators.clickFAQ();
-		pageLoadTimeout(10);
 		getEvidence(new Object() {
 		}, "よくある質問画面");
 	}
@@ -107,7 +102,6 @@ public class Case06 {
 	@DisplayName("テスト05 カテゴリ検索で該当カテゴリの検索結果だけ表示")
 	void test05() {
 		locators.testCategory();
-		pageLoadTimeout(10);
 		getEvidence(new Object() {
 		}, "よくある質問画面_カテゴリ検索_結果");
 	}
@@ -119,7 +113,7 @@ public class Case06 {
 	@Order(6)
 	@DisplayName("テスト06 検索結果の質問をクリックしその回答を表示")
 	void test06() {
-		locators.testCategoryResultCheck();
+		locators.testCategoryDetailCheck();
 		getEvidence(new Object() {
 		}, "よくある質問画面_カテゴリ検索_結果詳細");
 	}

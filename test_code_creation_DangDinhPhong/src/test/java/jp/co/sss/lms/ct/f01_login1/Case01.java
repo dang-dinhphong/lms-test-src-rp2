@@ -1,5 +1,6 @@
 package jp.co.sss.lms.ct.f01_login1;
 
+import static jp.co.sss.lms.ct.util.Constant.*;
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 
 import org.junit.jupiter.api.AfterAll;
@@ -53,11 +54,9 @@ public class Case01 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		goTo("http://localhost:8080/lms/");
 		locators.checkLoginScreen();
-		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		}, "ログイン画面");
+		}, ACCESS_LMS);
 	}
 
 }

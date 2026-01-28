@@ -1,5 +1,6 @@
 package jp.co.sss.lms.ct.f03_report;
 
+import static jp.co.sss.lms.ct.util.Constant.*;
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 
 import org.junit.jupiter.api.AfterAll;
@@ -53,11 +54,9 @@ public class Case07 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		goTo("http://localhost:8080/lms/");
 		locators.checkLoginScreen();
-		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		}, "ログイン画面");
+		}, ACCESS_LMS);
 	}
 
 	/**
@@ -68,10 +67,8 @@ public class Case07 {
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
 		locators.login();
-		pageLoadTimeout(10);
-		locators.checkCourseName();
 		getEvidence(new Object() {
-		}, "コース詳細画面");
+		}, COURSE_DETAIL);
 	}
 
 	@Test
@@ -79,7 +76,6 @@ public class Case07 {
 	@DisplayName("テスト03 未提出の研修日の「詳細」ボタンを押下しセクション詳細画面に遷移")
 	void test03() {
 		locators.clickUnsubmitted();
-		pageLoadTimeout(10);
 		getEvidence(new Object() {
 		}, "セクション詳細画面_未提出_ボタン名");
 	}
@@ -98,10 +94,7 @@ public class Case07 {
 	@Order(5)
 	@DisplayName("テスト05 報告内容を入力して「提出する」ボタンを押下し確認ボタン名が更新される")
 	void test05() {
-		/** レポート内容*/
-		String myReport = "本日の研修を終了します";
-		locators.submitDailyReport(myReport);
-		pageLoadTimeout(10);
+		locators.submitDailyReport();
 		getEvidence(new Object() {
 		}, "セクション詳細画面_提出済み_ボタン名変更");
 	}

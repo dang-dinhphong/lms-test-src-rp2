@@ -1,5 +1,6 @@
 package jp.co.sss.lms.ct.f03_report;
 
+import static jp.co.sss.lms.ct.util.Constant.*;
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 
 import org.junit.jupiter.api.AfterAll;
@@ -53,11 +54,9 @@ public class Case08 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		goTo("http://localhost:8080/lms/");
 		locators.checkLoginScreen();
-		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		}, "ログイン画面");
+		}, ACCESS_LMS);
 	}
 
 	/**
@@ -68,44 +67,54 @@ public class Case08 {
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
 		locators.login();
-		pageLoadTimeout(10);
-		locators.checkCourseName();
 		getEvidence(new Object() {
-		}, "コース詳細画面");
+		}, COURSE_DETAIL);
 	}
 
 	@Test
 	@Order(3)
 	@DisplayName("テスト03 提出済の研修日の「詳細」ボタンを押下しセクション詳細画面に遷移")
 	void test03() {
+		locators.clickSubmitted();
+		getEvidence(new Object() {
+		}, "セッション詳細画面");
 	}
 
 	@Test
 	@Order(4)
 	@DisplayName("テスト04 「確認する」ボタンを押下しレポート登録画面に遷移")
 	void test04() {
-		// TODO ここに追加
+		locators.clickWeeklyReportSubmitBtn();
+		pageLoadTimeout(10);
+		getEvidence(new Object() {
+		}, "レポート登録画面");
 	}
 
 	@Test
 	@Order(5)
 	@DisplayName("テスト05 報告内容を修正して「提出する」ボタンを押下しセクション詳細画面に遷移")
 	void test05() {
-		// TODO ここに追加
+		locators.submitWeeklyReport();
+		getEvidence(new Object() {
+		}, "セッション詳細画面");
 	}
 
 	@Test
 	@Order(6)
 	@DisplayName("テスト06 上部メニューの「ようこそ○○さん」リンクからユーザー詳細画面に遷移")
 	void test06() {
-		// TODO ここに追加
+		locators.gotoUserDetail();
+		getEvidence(new Object() {
+		}, "ユーザ詳細画面");
 	}
 
 	@Test
 	@Order(7)
 	@DisplayName("テスト07 該当レポートの「詳細」ボタンを押下しレポート詳細画面で修正内容が反映される")
 	void test07() {
-		// TODO ここに追加
+		locators.checkWeeklyReportChange();
+		getEvidence(new Object() {
+		}, "レポート登録画面");
 	}
 
 }

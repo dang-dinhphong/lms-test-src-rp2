@@ -1,5 +1,6 @@
 package jp.co.sss.lms.ct.f01_login1;
 
+import static jp.co.sss.lms.ct.util.Constant.*;
 import static jp.co.sss.lms.ct.util.WebDriverUtils.*;
 
 import org.junit.jupiter.api.AfterAll;
@@ -52,11 +53,9 @@ public class Case02 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		goTo("http://localhost:8080/lms/");
 		locators.checkLoginScreen();
-		pageLoadTimeout(10);
 		getEvidence(new Object() {
-		}, "ログイン画面");
+		}, ACCESS_LMS);
 	}
 
 	/**
@@ -69,16 +68,8 @@ public class Case02 {
 		//DBに存在しないID・パスワードをそのまま渡します
 		//Case03からは環境変数使用予定
 		String id = "StudentAA100";
-		String password = "StudentAA100";
-		if (id == null || password == null) {
-			System.out.println("環境変数が存在しません。確認してください。");
-			return;
-		}
-
-		/** ログインID・パスワードを自動入力*/
-		locators.loginFail(id, password);
-		locators.checkLoginErrorMsg();
-		pageLoadTimeout(10);
+		String pass = "StudentAA100";
+		locators.loginFail(id, pass);
 		getEvidence(new Object() {
 		}, "ログイン画面_エラーメッセージ表示");
 	}
