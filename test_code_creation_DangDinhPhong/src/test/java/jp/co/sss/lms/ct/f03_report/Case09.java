@@ -71,6 +71,9 @@ public class Case09 {
 		}, COURSE_DETAIL);
 	}
 
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(3)
 	@DisplayName("テスト03 上部メニューの「ようこそ○○さん」リンクからユーザー詳細画面に遷移")
@@ -81,6 +84,9 @@ public class Case09 {
 
 	}
 
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(4)
 	@DisplayName("テスト04 該当レポートの「修正する」ボタンを押下しレポート登録画面に遷移")
@@ -90,6 +96,9 @@ public class Case09 {
 		}, "レポート登録画面_週報_修正");
 	}
 
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(5)
 	@DisplayName("テスト05 報告内容を修正して「提出する」ボタンを押下しエラー表示：学習項目が未入力")
@@ -102,6 +111,9 @@ public class Case09 {
 		}, "レポート登録画面_週報_修正_学習項目_未入力_エラーメッセージ");
 	}
 
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(6)
 	@DisplayName("テスト06 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：理解度が未入力")
@@ -114,6 +126,9 @@ public class Case09 {
 		}, "レポート登録画面_週報_修正_理解度_未入力_エラーメッセージ");
 	}
 
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(7)
 	@DisplayName("テスト07 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度が数値以外")
@@ -126,6 +141,9 @@ public class Case09 {
 		}, "レポート登録画面_週報_修正_目標達成度_数値以外_エラーメッセージ");
 	}
 
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(8)
 	@DisplayName("テスト08 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度が範囲外")
@@ -138,6 +156,9 @@ public class Case09 {
 		}, "レポート登録画面_週報_修正_目標達成度_範囲外_エラーメッセージ");
 	}
 
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(9)
 	@DisplayName("テスト09 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度・所感が未入力")
@@ -150,6 +171,9 @@ public class Case09 {
 		}, "レポート登録画面_週報_修正_目標の達成度・所感_未入力_エラーメッセージ");
 	}
 
+	/**
+	 * @author DangDinhPhong
+	 */
 	@Test
 	@Order(10)
 	@DisplayName("テスト10 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：所感・一週間の振り返りが2000文字超")

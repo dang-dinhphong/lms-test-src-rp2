@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.Duration;
 import java.util.List;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -236,6 +237,23 @@ public class Locators {
 	@FindBy(xpath = "//tr[descendant::td[contains(text(), '週報【デモ】')]]//input[@value='修正する']")
 	private WebElement weekReportFixBtn;
 
+	/** Case10*/
+	@FindBy(css = "a[href='/lms/attendance/detail']")
+	private WebElement attendanceDetail;
+
+	@FindBy(name = "punchIn")
+	private WebElement punchInBtn;
+	@FindBy(name = "punchOut")
+	private WebElement punchOutBtn;
+
+	@FindBy(xpath = "//td[contains(text(),'2026年1月29日(木)')]/following-sibling::td[@class='w80'][1]")
+	private WebElement punchInCheck;
+	@FindBy(xpath = "//td[contains(text(),'2026年1月29日(木)')]/following-sibling::td[@class='w80'][2]")
+	private WebElement punchOutCheck;
+
+	@FindBy(xpath = "//div[@id='main']//span[not(ancestor::button)]")
+	private WebElement punchSuccessMsg;
+
 	/**
 	 * 初期化用コントラクター
 	 * WebDriverUtilsで生成されたインスタンスをローカル保存し、下記メソッドを使えるようにする
@@ -324,7 +342,11 @@ public class Locators {
 
 		/** コース名確認*/
 		wait.until(ExpectedConditions.visibilityOf(courseName));
-		assertEquals("DEMOコース 2022年10月1日(土)～2022年10月31日(月)", courseName.getText());
+		/** Case01~Case09用*/
+		//		assertEquals("DEMOコース 2022年10月1日(土)～2022年10月31日(月)", courseName.getText());
+
+		/** Case10用*/
+		assertEquals("DEMOコース 2026年1月28日(水)～2026年1月29日(木)", courseName.getText());
 	}
 
 	/** 上部メニュー > 機能ボタン押下 > ヘルプボタン押下*/
@@ -879,6 +901,51 @@ public class Locators {
 
 		assertEquals(impressErrorMsg, errorMsg.getText());
 		assertEquals(weekReportErrorMsg, errorMsgPlus.getText());
+	}
+
+	/** Case10
+	 * @throws InterruptedException */
+	public void gotoAttendanceDetail() throws InterruptedException {
+		wait.until(ExpectedConditions.visibilityOf(attendanceDetail));
+		try {
+			attendanceDetail.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", attendanceDetail);
+		}
+
+		Thread.sleep(2000);
+
+		Alert alert = driver.switchTo().alert();
+		alert.accept();
+		wait.until(ExpectedConditions.visibilityOf(mainTopTitle));
+		assertEquals("勤怠管理", mainTopTitle.getText());
+	}
+
+	void doPunch(WebElement punchBtn, WebElement punchCheck) throws InterruptedException {
+		wait.until(ExpectedConditions.visibilityOf(punchBtn));
+		try {
+			punchBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", punchBtn);
+		}
+		Thread.sleep(2000);
+		Alert alert = driver.switchTo().alert();
+		alert.accept();
+		wait.until(ExpectedConditions.visibilityOf(punchCheck));
+		assertNotNull(punchCheck.getText());
+		assertEquals("勤怠情報の登録が完了しました。", punchSuccessMsg.getText());
+	}
+
+	public void doPunchIn() throws InterruptedException {
+		doPunch(punchInBtn, punchInCheck);
+	}
+
+	public void doPunchOut() throws InterruptedException {
+		doPunch(punchOutBtn, punchOutCheck);
 	}
 
 }
