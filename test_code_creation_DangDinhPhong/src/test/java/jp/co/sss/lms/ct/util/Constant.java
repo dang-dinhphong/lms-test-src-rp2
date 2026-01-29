@@ -8,7 +8,11 @@ public class Constant {
 	/** 週報変更定数*/
 	public static final String COMPRE_LVL = "3";
 	public static final String ACHIEVE = "10";
+	public static final String ACHIEVE_NOT_NUM = "学習あいうえおアイウエオaiueoAIUEO）＊？＊．｀＝＇；＿［］＂｛［＜！．］＆";
 
+	public static final String EMPTY = "";
+
+	public static final String ACHIEVE_OUT_OF_RANGE = "11";
 	public static final String CURRICULUM_DEF = "ITリテラシー①";
 	public static final String ACHIEVE_DEF = "10";
 	public static final String IMPRESS_DEF = "【変更】週報の変更です。";

@@ -427,10 +427,11 @@ public class Locators {
 
 	}
 
+	/** よくある質問 > キーワード検索の「クリア」ボタン押下*/
 	public void clearKeyword() {
 		/** キーワード検索欄を空にする*/
 		faqKeywordInput.clear();
-		assertEquals("", faqKeywordInput.getText());
+		assertEquals(EMPTY, faqKeywordInput.getText());
 	}
 
 	/** 【研修関係】リンクを押下 > 検索結果を確認*/
@@ -613,6 +614,9 @@ public class Locators {
 		pageLoadTimeout(10);
 	}
 
+	/**
+	 * 「ようこそ、○○さん」ボタン押下し、ユーザ詳細画面に遷移
+	 */
 	public void gotoUserDetail() {
 		wait.until(ExpectedConditions.visibilityOf(userDetailBtn));
 		/** 「ようこそ、○○さん」ボタン押下*/
@@ -629,6 +633,9 @@ public class Locators {
 		pageLoadTimeout(10);
 	}
 
+	/**
+	 * 修正した週報は反映されたか確認
+	 */
 	public void checkWeeklyReportChange() {
 		scrollTo("500");
 		assertEquals("2022年10月2日(日)", userWeeklyReportDate.getText());
@@ -655,6 +662,7 @@ public class Locators {
 
 	/** Case09*/
 	/** 入力チェック*/
+	/** コース詳細画面から「ようこそ、○○さん」ボタンを押下し、ユーザ詳細画面に遷移*/
 	public void gotoUserDetailFromCourse() {
 		wait.until(ExpectedConditions.visibilityOf(courseName));
 		assertEquals("DEMOコース 2022年10月1日(土)～2022年10月31日(月)", courseName.getText());
@@ -674,6 +682,7 @@ public class Locators {
 		pageLoadTimeout(10);
 	}
 
+	/** ユーザ詳細画面から「週報【デモ】」の同じ行の「修正する」ボタンを押下し、レポート登録画面に遷移*/
 	public void gotoWeeklyReportChange() {
 		try {
 			weekReportFixBtn.click();
@@ -686,6 +695,8 @@ public class Locators {
 		pageLoadTimeout(10);
 	}
 
+	/** Case09*/
+	/** 各テスト実施前各項目をデフォルトにする*/
 	public void setDefault() {
 		wait.until(ExpectedConditions.visibilityOf(weeklyRevision));
 		curriculum.clear();
@@ -731,11 +742,12 @@ public class Locators {
 		}
 	}
 
-	//"テスト05 報告内容を修正して「提出する」ボタンを押下しエラー表示：学習項目が未入力"
+	/** Case09Test5*/
+	/** 学習項目が未入力*/
 	public void inputCheckCurriculum() {
 		wait.until(ExpectedConditions.visibilityOf(curriculum));
 		curriculum.clear();
-		curriculum.sendKeys("");//未入力
+		curriculum.sendKeys(EMPTY);
 		try {
 			submitBtn.click();
 		} catch (Exception e) {
@@ -747,7 +759,8 @@ public class Locators {
 		assertEquals("* 理解度を入力した場合は、学習項目は必須です。", errorMsg.getText());
 	}
 
-	//"テスト06 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：理解度が未入力"
+	/** Case09Test6*/
+	/** 理解度が未入力*/
 	public void inputCheckUnderstanding() {
 		wait.until(ExpectedConditions.visibilityOf(understandingList));
 		try {
@@ -777,6 +790,10 @@ public class Locators {
 	}
 
 	/** テスト07,08の共通部分*/
+	/**
+	 * @param achieveKey 目標達成度の入力内容
+	 * @param achieveErrorMsg 目標達成度の入力内容によるエラーメッセージ
+	 */
 	void inputCheckAchieve(String achieveKey, String achieveErrorMsg) {
 		wait.until(ExpectedConditions.visibilityOf(achieveLvl));
 		achieveLvl.clear();
@@ -792,28 +809,29 @@ public class Locators {
 		assertEquals(achieveErrorMsg, errorMsg.getText());
 	}
 
-	//"テスト07 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度が数値以外"
+	/** Case09Test7*/
+	/** 目標の達成度が数値以外*/
 	public void inputCheckAchieveNotNum() {
-		String notNumAchieve = "学習あいうえおアイウエオaiueoAIUEO）＊？＊．｀＝＇；＿［］＂｛［＜！．］＆";
 		String errMsg = "* 目標の達成度は半角数字で入力してください。";
-		inputCheckAchieve(notNumAchieve, errMsg);
+		inputCheckAchieve(ACHIEVE_NOT_NUM, errMsg);
 	}
 
-	//"テスト08 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度が範囲外"
+	/** Case09Test8*/
+	/** 目標の達成度が範囲外*/
 	public void inputCheckAchieveOutOfRange() {
-		Integer outofRangeAchieve = １１;
 		String errMsg = "* 目標の達成度は、半角数字で、1～10の範囲内で入力してください。";
-		inputCheckAchieve(outofRangeAchieve.toString(), errMsg);
+		inputCheckAchieve(ACHIEVE_OUT_OF_RANGE, errMsg);
 	}
 
-	//"テスト09 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度・所感が未入力"
+	/** Case09Test9*/
+	/** 目標の達成度・所感が未入力*/
 	public void inputCheckBothAchieveAndImpressEmpty() {
 		wait.until(ExpectedConditions.visibilityOf(impression));
 
 		achieveLvl.clear();
-		achieveLvl.sendKeys("");
+		achieveLvl.sendKeys(EMPTY);
 		impression.clear();
-		impression.sendKeys("");
+		impression.sendKeys(EMPTY);
 
 		try {
 			submitBtn.click();
@@ -833,7 +851,8 @@ public class Locators {
 
 	}
 
-	//"テスト10 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：所感・一週間の振り返りが2000文字超"
+	/** Case09Test10*/
+	/** 所感・一週間の振り返りが2000文字超*/
 	public void inputCheckBothImpresssionAndWeekReportTooLong() {
 		wait.until(ExpectedConditions.visibilityOf(weeklyRevision));
 
