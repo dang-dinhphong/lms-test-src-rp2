@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.Duration;
 import java.util.List;
 
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -157,14 +158,24 @@ public class Locators {
 	@FindBy(css = "input[type='submit'][value*='週報']")
 	private WebElement submitWeeklyReportBtn;
 
-	/** 週報の修正項目ロケータ*/
+	/**************************** 週報の修正項目ロケータ*******************************/
+	/** Case09入力チェックにも使用*/
+
+	/** 学習項目入力欄*/
+	@FindBy(id = "intFieldName_0")
+	private WebElement curriculum;
+
 	/** 理解度ドロップダウンリスト*/
 	@FindBy(id = "intFieldValue_0")
 	private WebElement understandingList;
 
-	/** 理解度選択肢*/
+	/** 理解度選択肢3*/
 	@FindBy(css = "option[value = '3']")
 	private WebElement understanding;
+
+	/** 理解度選択肢未選択*/
+	@FindBy(css = "option[value = '']")
+	private WebElement understandingEmpty;
 
 	/** 目標の達成度*/
 	@FindBy(id = "content_0")
@@ -177,6 +188,15 @@ public class Locators {
 	/** 一週間の振り返り*/
 	@FindBy(id = "content_2")
 	private WebElement weeklyRevision;
+
+	/** Case09入力チェック・エラーメッセージロケータ*/
+	/** エラーメッセージ*/
+	@FindBy(xpath = "//p[descendant::span[1]]")
+	private WebElement errorMsg;
+
+	/** エラーメッセージ（複数ある場合）*/
+	@FindBy(xpath = "(//p[descendant::span[1]])[2]")
+	private WebElement errorMsgPlus;
 
 	/** ようこそ、○○さんボタン*/
 	@FindBy(css = "a[href='/lms/user/detail']")
@@ -195,10 +215,6 @@ public class Locators {
 	@FindBy(xpath = "//tr[descendant::td[contains(text(), '週報【デモ】')]]//input[@value='詳細']")
 	private WebElement userWeeklyDetailBtn;
 
-	/** 週報【デモ】詳細画面 > 理解度（1段階評価）タイトル*/
-	@FindBy(xpath = "(//table[@class = 'table table-hover'])[2]//th[2]")
-	private WebElement understandingTitle;
-
 	/** 週報【デモ】詳細画面 > 理解度（1段階評価）*/
 	@FindBy(xpath = "(//table[@class = 'table table-hover'])[2]//td[2]/p")
 	private WebElement understandingCheck;
@@ -214,6 +230,11 @@ public class Locators {
 	/** 週報【デモ】詳細画面 > 一週間の振り返り*/
 	@FindBy(xpath = "(//table[@class = 'table table-hover'])[3]//tr[3]/td")
 	private WebElement weekRevisionCheck;
+
+	/** Case09*/
+	/** ユーザ詳細画面 > 「週報【デモ】 の同じ行の「修正する」ボタン」*/
+	@FindBy(xpath = "//tr[descendant::td[contains(text(), '週報【デモ】')]]//input[@value='修正する']")
+	private WebElement weekReportFixBtn;
 
 	/**
 	 * 初期化用コントラクター
@@ -623,7 +644,6 @@ public class Locators {
 		}
 
 		/** レポート詳細画面遷移*/
-		wait.until(ExpectedConditions.visibilityOf(understandingTitle));
 		assertEquals(COMPRE_LVL, understandingCheck.getText());
 		assertEquals(ACHIEVE, achieveLvlCheck.getText());
 		assertEquals("【変更】週報の変更です。", impressCheck.getText());
@@ -631,7 +651,215 @@ public class Locators {
 				"【変更】日報・週報などの入力項目は管理者権限で変更することが可能です。「週報」の入力項目は管理画面のレポート作成機能を用いて設定し、変更されたレポートのフォーマットはデータベースの「m_weekly_report」テーブルに登録されています。",
 				weekRevisionCheck.getText());
 		pageLoadTimeout(10);
+	}
 
+	/** Case09*/
+	/** 入力チェック*/
+	public void gotoUserDetailFromCourse() {
+		wait.until(ExpectedConditions.visibilityOf(courseName));
+		assertEquals("DEMOコース 2022年10月1日(土)～2022年10月31日(月)", courseName.getText());
+
+		try {
+			userDetailBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", userDetailBtn);
+		}
+
+		wait.until(ExpectedConditions.visibilityOf(subTopTitle));
+		assertEquals("ユーザー詳細", mainTopTitle.getText());
+		assertEquals("基本情報", subTopTitle.getText());
+
+		pageLoadTimeout(10);
+	}
+
+	public void gotoWeeklyReportChange() {
+		try {
+			weekReportFixBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", weekReportFixBtn);
+		}
+		assertEquals("週報【デモ】 2022年10月2日", mainTopTitle.getText());
+		pageLoadTimeout(10);
+	}
+
+	public void setDefault() {
+		wait.until(ExpectedConditions.visibilityOf(weeklyRevision));
+		curriculum.clear();
+		curriculum.sendKeys(CURRICULUM_DEF);
+
+		try {
+			understandingList.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", understandingList);
+		}
+		try {
+			understanding.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", understanding);
+		}
+
+		achieveLvl.clear();
+		achieveLvl.sendKeys(ACHIEVE_DEF);
+
+		impression.clear();
+		impression.sendKeys(IMPRESS_DEF);
+
+		weeklyRevision.clear();
+		weeklyRevision.sendKeys(CURRICULUM_DEF);
+
+		try {
+			userDetailBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", userDetailBtn);
+		}
+		try {
+			weekReportFixBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", weekReportFixBtn);
+		}
+	}
+
+	//"テスト05 報告内容を修正して「提出する」ボタンを押下しエラー表示：学習項目が未入力"
+	public void inputCheckCurriculum() {
+		wait.until(ExpectedConditions.visibilityOf(curriculum));
+		curriculum.clear();
+		curriculum.sendKeys("");//未入力
+		try {
+			submitBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", submitBtn);
+		}
+		wait.until(ExpectedConditions.visibilityOf(errorMsg));
+		assertEquals("* 理解度を入力した場合は、学習項目は必須です。", errorMsg.getText());
+	}
+
+	//"テスト06 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：理解度が未入力"
+	public void inputCheckUnderstanding() {
+		wait.until(ExpectedConditions.visibilityOf(understandingList));
+		try {
+			understandingList.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", understandingList);
+		}
+		try {
+			understandingEmpty.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", understandingEmpty);
+		}
+
+		try {
+			submitBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", submitBtn);
+		}
+		wait.until(ExpectedConditions.visibilityOf(errorMsg));
+		assertEquals("* 学習項目を入力した場合は、理解度は必須です。", errorMsg.getText());
+	}
+
+	/** テスト07,08の共通部分*/
+	void inputCheckAchieve(String achieveKey, String achieveErrorMsg) {
+		wait.until(ExpectedConditions.visibilityOf(achieveLvl));
+		achieveLvl.clear();
+		achieveLvl.sendKeys(achieveKey);
+		try {
+			submitBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", submitBtn);
+		}
+		wait.until(ExpectedConditions.visibilityOf(errorMsg));
+		assertEquals(achieveErrorMsg, errorMsg.getText());
+	}
+
+	//"テスト07 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度が数値以外"
+	public void inputCheckAchieveNotNum() {
+		String notNumAchieve = "学習あいうえおアイウエオaiueoAIUEO）＊？＊．｀＝＇；＿［］＂｛［＜！．］＆";
+		String errMsg = "* 目標の達成度は半角数字で入力してください。";
+		inputCheckAchieve(notNumAchieve, errMsg);
+	}
+
+	//"テスト08 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度が範囲外"
+	public void inputCheckAchieveOutOfRange() {
+		Integer outofRangeAchieve = １１;
+		String errMsg = "* 目標の達成度は、半角数字で、1～10の範囲内で入力してください。";
+		inputCheckAchieve(outofRangeAchieve.toString(), errMsg);
+	}
+
+	//"テスト09 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度・所感が未入力"
+	public void inputCheckBothAchieveAndImpressEmpty() {
+		wait.until(ExpectedConditions.visibilityOf(impression));
+
+		achieveLvl.clear();
+		achieveLvl.sendKeys("");
+		impression.clear();
+		impression.sendKeys("");
+
+		try {
+			submitBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", submitBtn);
+		}
+
+		scrollTo("300");
+
+		String achieveErrorMsg = "* 目標の達成度は半角数字で入力してください。";
+		String impressErrorMsg = "* 所感は必須です。";
+		wait.until(ExpectedConditions.visibilityOf(errorMsg));
+		assertEquals(achieveErrorMsg, errorMsg.getText());
+		assertEquals(impressErrorMsg, errorMsgPlus.getText());
+
+	}
+
+	//"テスト10 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：所感・一週間の振り返りが2000文字超"
+	public void inputCheckBothImpresssionAndWeekReportTooLong() {
+		wait.until(ExpectedConditions.visibilityOf(weeklyRevision));
+
+		impression.clear();
+		impression.sendKeys(TOO_LONG);
+		weeklyRevision.clear();
+		weeklyRevision.sendKeys(TOO_LONG);
+
+		try {
+			submitBtn.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", submitBtn);
+		}
+
+		/** scrollBy()scrollTo()でうまく画面ボトムまでいかないため、Jsで強制スクロール*/
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+
+		wait.until(ExpectedConditions.visibilityOf(errorMsgPlus));
+		String impressErrorMsg = "* 所感の長さが最大値(2000)を超えています。";
+		String weekReportErrorMsg = "* 一週間の振り返りの長さが最大値(2000)を超えています。";
+
+		assertEquals(impressErrorMsg, errorMsg.getText());
+		assertEquals(weekReportErrorMsg, errorMsgPlus.getText());
 	}
 
 }
