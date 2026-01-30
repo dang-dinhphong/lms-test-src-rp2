@@ -1011,7 +1011,7 @@ public class Locators {
 		/** 出退勤をデフォルトにする*/
 		setDefaultTime();
 
-		doSendKeys(attendanceNote, TOO_LONG);
+		doSendKeys(attendanceNote, LONG_NOTE);
 		tryClick(doAttendanceDirectUpdateBtn);
 		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
 		alert.accept();
