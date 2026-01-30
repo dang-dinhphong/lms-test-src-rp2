@@ -289,11 +289,20 @@ public class Locators {
 	@FindBy(xpath = "//select[@id='startHour0']/option[@value='']")
 	private WebElement punchInHourEmpty;
 
+	@FindBy(xpath = "//select[@id='startHour0']/option[@value='20']")
+	private WebElement punchInHourLate;
+
+	@FindBy(xpath = "//select[@id='startHour0']/option[@value='10']")
+	private WebElement punchInHourTenAM;
+
 	@FindBy(id = "startMinute0")
 	private WebElement punchInMinute;
 
 	@FindBy(xpath = "//select[@id='startMinute0']/option[@value='0']")
 	private WebElement punchInMinuteZero;
+
+	@FindBy(xpath = "//select[@id='startMinute0']/option[@value='']")
+	private WebElement punchInMinuteEmpty;
 
 	@FindBy(id = "endHour0")
 	private WebElement punchOutHour;
@@ -301,21 +310,33 @@ public class Locators {
 	@FindBy(xpath = "//select[@id='endHour0']/option[@value='18']")
 	private WebElement punchOutHourFixed;
 
+	@FindBy(xpath = "//select[@id='endHour0']/option[@value='12']")
+	private WebElement punchOutHourNoon;
+
 	@FindBy(id = "endMinute0")
 	private WebElement punchOutMinute;
 	@FindBy(xpath = "//select[@id='endMinute0']/option[@value='']")
 	private WebElement punchOutMinuteEmpty;
 
+	@FindBy(xpath = "//select[@id='endMinute0']/option[@value='0']")
+	private WebElement punchOutMinuteZero;
+
 	@FindBy(name = "attendanceList[0].blankTime")
-	private WebElement intermissionTime;
+	private WebElement intermissionList;
+
+	@FindBy(xpath = "//select[@name='attendanceList[0].blankTime']/option[@value='420']")
+	private WebElement intermissionHour;
+
+	@FindBy(xpath = "//select[@name='attendanceList[0].blankTime']/option[@value='']")
+	private WebElement intermissionEmpty;
 
 	@FindBy(name = "attendanceList[1].note")
 	private WebElement attendanceNote;
 
-	@FindBy(xpath = "//*[@class = 'help-inline error'][1]")
+	@FindBy(xpath = "(//*[@class = 'help-inline error'])[1]")
 	private WebElement attendanceErrorOne;
 
-	@FindBy(xpath = "//*[@class = 'help-inline error'][2]")
+	@FindBy(xpath = "(//*[@class = 'help-inline error'])[2]")
 	private WebElement attendanceErrorTwo;
 
 	/**
@@ -873,14 +894,26 @@ public class Locators {
 
 	}
 
+	void setDefaultTime() {
+		tryClick(doFixedTimeBtn);
+		tryClick(intermissionList);
+		tryClick(intermissionEmpty);
+		doSendKeys(attendanceNote, EMPTY);
+	}
+
 	/** 出退勤の（時）と（分）のいずれかが空白*/
 	public void doChangeMixedEmptyHourAndMinute() {
+		/** 出退勤をデフォルトにする*/
+		setDefaultTime();
+		;
+
 		/** 出勤時間：[(空):00]*/
 		tryClick(punchInHour);
 		tryClick(punchInHourEmpty);
 		tryClick(punchInMinute);
 		tryClick(punchInMinuteZero);
 
+		/** 退勤時間：[18:(空)]*/
 		tryClick(punchOutHour);
 		tryClick(punchOutHourFixed);
 		tryClick(punchOutMinute);
@@ -890,8 +923,100 @@ public class Locators {
 		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
 		alert.accept();
 
-		waitVisible(punchSuccessMsg);
-
+		waitVisible(attendanceErrorOne);
+		assertEquals("* 出勤時間が正しく入力されていません。", attendanceErrorOne.getText());
+		assertEquals("* 退勤時間が正しく入力されていません。", attendanceErrorTwo.getText());
 	}
 
+	/** 出勤が空白で退勤に入力あり*/
+	public void doChangeEmptyPunchIn() {
+		/** 出退勤をデフォルトにする*/
+		setDefaultTime();
+
+		/** 出勤時間：[(空):(空)]*/
+		tryClick(punchInHour);
+		tryClick(punchInHourEmpty);
+		tryClick(punchInMinute);
+		tryClick(punchInMinuteEmpty);
+
+		/** 出勤時間：[18:00]*/
+		tryClick(punchOutHour);
+		tryClick(punchOutHourFixed);
+		tryClick(punchOutMinute);
+		tryClick(punchOutMinuteZero);
+
+		tryClick(doAttendanceDirectUpdateBtn);
+		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+		alert.accept();
+
+		waitVisible(attendanceErrorOne);
+		assertEquals("* 出勤情報がないため退勤情報を入力出来ません。", attendanceErrorOne.getText());
+	}
+
+	/** 出勤が退勤よりも遅い時間*/
+	public void doChangeWrongLogicTime() {
+		/** 出退勤をデフォルトにする*/
+		setDefaultTime();
+
+		/** 出勤時間：[20:00]*/
+		tryClick(punchInHour);
+		tryClick(punchInHourLate);
+		tryClick(punchInMinute);
+		tryClick(punchInMinuteZero);
+
+		/** 退勤時間：[18:00]*/
+		tryClick(punchOutHour);
+		tryClick(punchOutHourFixed);
+		tryClick(punchOutMinute);
+		tryClick(punchOutMinuteZero);
+
+		tryClick(doAttendanceDirectUpdateBtn);
+		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+		alert.accept();
+
+		waitVisible(attendanceErrorOne);
+		assertEquals("* 退勤時刻[0]は出勤時刻[0]より後でなければいけません。", attendanceErrorOne.getText());
+	}
+
+	/** 出退勤時間を超える中抜け時間*/
+	public void doChangeTooLongIntermission() {
+		/** 出退勤をデフォルトにする*/
+		setDefaultTime();
+
+		/** 出勤時間：[10:00]*/
+		tryClick(punchInHour);
+		tryClick(punchInHourTenAM);
+		tryClick(punchInMinute);
+		tryClick(punchInMinuteZero);
+
+		/** 退勤時間：[12:00]*/
+		tryClick(punchOutHour);
+		tryClick(punchOutHourNoon);
+		tryClick(punchOutMinute);
+		tryClick(punchOutMinuteZero);
+
+		/** 中抜け時間：7時間*/
+		tryClick(intermissionList);
+		tryClick(intermissionHour);
+
+		tryClick(doAttendanceDirectUpdateBtn);
+		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+		alert.accept();
+
+		waitVisible(attendanceErrorOne);
+		assertEquals("* 中抜け時間が勤務時間を超えています。", attendanceErrorOne.getText());
+	}
+
+	public void doLongNote() {
+		/** 出退勤をデフォルトにする*/
+		setDefaultTime();
+
+		doSendKeys(attendanceNote, TOO_LONG);
+		tryClick(doAttendanceDirectUpdateBtn);
+		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+		alert.accept();
+
+		waitVisible(attendanceErrorOne);
+		assertEquals("* 備考の長さが最大値(100)を超えています。", attendanceErrorOne.getText());
+	}
 }
