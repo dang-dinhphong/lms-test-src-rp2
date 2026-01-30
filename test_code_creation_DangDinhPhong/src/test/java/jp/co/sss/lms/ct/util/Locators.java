@@ -238,27 +238,91 @@ public class Locators {
 	private WebElement weekReportFixBtn;
 
 	/** Case10*/
+	/** 上部メニュ勤怠管理画面ボタン*/
 	@FindBy(css = "a[href='/lms/attendance/detail']")
 	private WebElement attendanceDetail;
 
+	/** 勤怠管理画面の「出勤」ボタン*/
 	@FindBy(name = "punchIn")
 	private WebElement punchInBtn;
+
+	/** 勤怠管理画面の「退勤」ボタン*/
 	@FindBy(name = "punchOut")
 	private WebElement punchOutBtn;
 
+	/** 研修日程の横の「出勤時間」にあたる箇所*/
+	/** 出勤ボタンを押下後、押下した時間が反映される*/
 	@FindBy(xpath = "//td[contains(text(),'2026年1月29日(木)')]/following-sibling::td[@class='w80'][1]")
 	private WebElement punchInCheck;
+
+	/** 研修日程の横の「退勤時間」にあたる箇所*/
+	/** 退勤ボタンを押下後、押下した時間が反映される*/
 	@FindBy(xpath = "//td[contains(text(),'2026年1月29日(木)')]/following-sibling::td[@class='w80'][2]")
 	private WebElement punchOutCheck;
 
+	/** 出勤もしくは退勤ボタンを押下後、成功時に表示する上部のメッセージ*/
 	@FindBy(xpath = "//div[@id='main']//span[not(ancestor::button)]")
 	private WebElement punchSuccessMsg;
+
+	/** 勤怠直接変更リンク*/
+	@FindBy(css = "a[href='/lms/attendance/update']")
+	private WebElement directAttendanceFixLink;
+
+	/** 勤怠直接変更画面の「定時」ボタン*/
+	@FindBy(xpath = "(//*[@class='btn btn-success default-button'])[1]")
+	private WebElement doFixedTimeBtn;
+
+	/** 勤怠直接変更画面の「定時」ボタン*/
+	@FindBy(xpath = "(//*[@class='btn btn-success default-button'])[2]")
+	private WebElement doFixedTimeBtnSecond;
+
+	/** 勤怠直接変更画面の「定時」ボタン*/
+	@FindBy(name = "complete")
+	private WebElement doAttendanceDirectUpdateBtn;
+
+	/** Case12*/
+	/** 勤怠入力チェック*/
+
+	@FindBy(id = "startHour0")
+	private WebElement punchInHour;
+
+	@FindBy(xpath = "//select[@id='startHour0']/option[@value='']")
+	private WebElement punchInHourEmpty;
+
+	@FindBy(id = "startMinute0")
+	private WebElement punchInMinute;
+
+	@FindBy(xpath = "//select[@id='startMinute0']/option[@value='0']")
+	private WebElement punchInMinuteZero;
+
+	@FindBy(id = "endHour0")
+	private WebElement punchOutHour;
+
+	@FindBy(xpath = "//select[@id='endHour0']/option[@value='18']")
+	private WebElement punchOutHourFixed;
+
+	@FindBy(id = "endMinute0")
+	private WebElement punchOutMinute;
+	@FindBy(xpath = "//select[@id='endMinute0']/option[@value='']")
+	private WebElement punchOutMinuteEmpty;
+
+	@FindBy(name = "attendanceList[0].blankTime")
+	private WebElement intermissionTime;
+
+	@FindBy(name = "attendanceList[1].note")
+	private WebElement attendanceNote;
+
+	@FindBy(xpath = "//*[@class = 'help-inline error'][1]")
+	private WebElement attendanceErrorOne;
+
+	@FindBy(xpath = "//*[@class = 'help-inline error'][2]")
+	private WebElement attendanceErrorTwo;
 
 	/**
 	 * 初期化用コントラクター
 	 * WebDriverUtilsで生成されたインスタンスをローカル保存し、下記メソッドを使えるようにする
 	 * 
-	 * @param driver
+	 * @param driver WebDriver
 	 */
 	public Locators(WebDriver driver) {
 		this.driver = driver;
@@ -269,16 +333,47 @@ public class Locators {
 		PageFactory.initElements(driver, this);
 	}
 
+	void waitVisible(WebElement element) {
+		wait.until(ExpectedConditions.visibilityOf(element));
+	}
+
+	/**
+	 * 入力
+	 * 
+	 * @param element 入力したい要素
+	 * @param key 入力内容
+	 */
+	void doSendKeys(WebElement element, String key) {
+		element.clear();
+		element.sendKeys(key);
+	}
+
+	/**
+	 * 各ボタンおよびURLリンクのJS強制押下
+	 * 
+	 * @param button ボタンやリンクなど
+	 */
+	void tryClick(WebElement button) {
+		try {
+			button.click();
+		} catch (Exception e) {
+			//JavaScriptでボタン強制押下
+			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", button);
+		}
+	}
+
 	/** ログインラベル確認*/
 	public void checkLoginScreen() {
 		goTo("http://localhost:8080/lms/");
-		wait.until(ExpectedConditions.visibilityOf(loginLabel));
+
+		waitVisible(loginLabel);
 		assertEquals("ログインID", loginLabel.getText());
 		/** パスワードラベル確認*/
-		wait.until(ExpectedConditions.visibilityOf(passwordLabel));
+		waitVisible(passwordLabel);
 		assertEquals("パスワード", passwordLabel.getText());
 		/** ログインボタン名確認*/
-		wait.until(ExpectedConditions.visibilityOf(loginBtn));
+		waitVisible(loginBtn);
 		//inputタグのvalueの値を取得
 		assertEquals("ログイン", loginBtn.getAttribute("value"));
 		pageLoadTimeout(10);
@@ -292,22 +387,14 @@ public class Locators {
 	 * @param pass パスワード
 	 */
 	public void loginFail(String id, String pass) {
-		wait.until(ExpectedConditions.visibilityOf(loginIdInput));
-		loginIdInput.clear();
-		loginIdInput.sendKeys(id);
-		passwordInput.clear();
-		passwordInput.sendKeys(pass);
+		waitVisible(loginIdInput);
 
-		try {
-			loginBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", loginBtn);
-		}
+		doSendKeys(loginIdInput, id);
+		doSendKeys(passwordInput, pass);
+		tryClick(loginBtn);
 
 		/** ログイン失敗時、エラーメッセージ表示確認*/
-		wait.until(ExpectedConditions.visibilityOf(loginErrorMsg));
+		waitVisible(loginErrorMsg);
 		assertEquals("* ログインに失敗しました。", loginErrorMsg.getText());
 
 		pageLoadTimeout(10);
@@ -326,19 +413,11 @@ public class Locators {
 			return;
 		}
 
-		wait.until(ExpectedConditions.visibilityOf(loginIdInput));
-		loginIdInput.clear();
-		loginIdInput.sendKeys(id);
-		passwordInput.clear();
-		passwordInput.sendKeys(password);
+		waitVisible(loginIdInput);
 
-		try {
-			loginBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", loginBtn);
-		}
+		doSendKeys(loginIdInput, id);
+		doSendKeys(passwordInput, password);
+		tryClick(loginBtn);
 
 		/** コース名確認*/
 		wait.until(ExpectedConditions.visibilityOf(courseName));
@@ -352,47 +431,29 @@ public class Locators {
 	/** 上部メニュー > 機能ボタン押下 > ヘルプボタン押下*/
 	public void clickHelp() {
 		/** 上部メニュー > 機能ボタン押下*/
-		try {
-			featureBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", featureBtn);
-		}
+		tryClick(featureBtn);
 
 		/** ヘルプボタン名確認*/
-		wait.until(ExpectedConditions.visibilityOf(helpLink));
+		waitVisible(helpLink);
 		assertEquals("ヘルプ", helpLink.getText());
 
 		/** ヘルプボタン押下*/
-		wait.until(ExpectedConditions.visibilityOf(helpLink));
-		try {
-			helpLink.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", helpLink);
-		}
+		waitVisible(helpLink);
+		tryClick(helpLink);
 
 		/** ヘルプタイトル確認*/
-		wait.until(ExpectedConditions.visibilityOf(helpTitle));
+		waitVisible(helpTitle);
 		assertEquals("ヘルプ", helpTitle.getText());
 
 		/** ヘルプタイトル確認*/
-		wait.until(ExpectedConditions.visibilityOf(h4Title));
+		waitVisible(h4Title);
 		assertEquals("※操作方法が不明な場合はマニュアルをご参照ください。", h4Title.getText());
 		pageLoadTimeout(10);
 	}
 
 	/** よくある質問URLリンクを押下し、遷移したか確認*/
 	public void clickFAQ() {
-		try {
-			faqLink.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", faqLink);
-		}
+		tryClick(faqLink);
 
 		//ヘルプ画面を（遷移する前に）検証する
 		String originalWindow = webDriver.getWindowHandle();
@@ -407,7 +468,7 @@ public class Locators {
 		}
 
 		//よくある質問タイトル確認
-		wait.until(ExpectedConditions.visibilityOf(faqTitle));
+		waitVisible(faqTitle);
 		assertEquals("よくある質問", faqTitle.getText());
 		pageLoadTimeout(10);
 	}
@@ -422,13 +483,7 @@ public class Locators {
 		faqKeywordInput.sendKeys(keyword);
 
 		/** キーワード検索時「検索」ボタン押下*/
-		try {
-			keywordSearchBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", keywordSearchBtn);
-		}
+		tryClick(keywordSearchBtn);
 
 		/** 検索結果を検証するメソッド*/
 		//リストが空（検索結果ゼロ）でないことを確認
@@ -458,11 +513,11 @@ public class Locators {
 
 	/** 【研修関係】リンクを押下 > 検索結果を確認*/
 	public void testCategory() {
-		wait.until(ExpectedConditions.visibilityOf(categoryJobTraining));
+		waitVisible(categoryJobTraining);
 		categoryJobTraining.click();
 
 		scrollTo("500");
-		wait.until(ExpectedConditions.visibilityOf(jobTrainingSecondResult));
+		waitVisible(jobTrainingSecondResult);
 
 		assertEquals("研修の申し込みはどのようにすれば良いですか？", jobTrainingSecondResult.getText());
 		assertEquals("2 件中 1 件から 2 件までを表示", jobTrainingResultsMsg.getText());
@@ -474,7 +529,7 @@ public class Locators {
 	public void testCategoryDetailCheck() {
 		jobTrainingSecondResult.click();
 		scrollTo("500");
-		wait.until(ExpectedConditions.visibilityOf(jobTrainingSecondResultDetail));
+		waitVisible(jobTrainingSecondResultDetail);
 		assertEquals("営業担当がいる場合は、営業担当までご連絡ください。 申し込み方法についてご案内させていただきます。 なお、弊社営業営業がいない場合は、東京ITスクール運営事務局までご連絡いただけると幸いです。",
 				jobTrainingSecondResultDetail.getText());
 		pageLoadTimeout(10);
@@ -484,19 +539,12 @@ public class Locators {
 	/** 未提出「日報」登録*/
 	/** 「未提出」ステータスの日付の「詳細」ボタン押下*/
 	public void clickUnsubmitted() {
-		wait.until(ExpectedConditions.visibilityOf(notSubmitStatus));
+		waitVisible(notSubmitStatus);
 		assertEquals("未提出", notSubmitStatus.getText());
 		assertEquals("詳細", notSubmitDetailBtn.getAttribute("value"));
 
-		try {
-			notSubmitDetailBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", notSubmitDetailBtn);
-		}
-
-		wait.until(ExpectedConditions.visibilityOf(courseTitle));
+		tryClick(notSubmitDetailBtn);
+		waitVisible(courseTitle);
 		assertEquals("コース詳細", courseTitle.getText());
 		assertEquals("セクション詳細", sectionTitle.getText());
 		assertEquals("日報【デモ】を提出する", submitDailyReportBtn.getAttribute("value"));
@@ -506,15 +554,9 @@ public class Locators {
 
 	/** 「日報【デモ】を提出する」ボタン押下*/
 	public void clickDailyReportSubmitBtn() {
-		wait.until(ExpectedConditions.visibilityOf(submitDailyReportBtn));
+		waitVisible(submitDailyReportBtn);
+		tryClick(submitDailyReportBtn);
 
-		try {
-			submitDailyReportBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", submitDailyReportBtn);
-		}
 		assertEquals("日報【デモ】 2022年10月5日", mainTopTitle.getText());
 	}
 
@@ -524,16 +566,9 @@ public class Locators {
 	 */
 	public void submitDailyReport() {
 		String report = "本日の研修を終了します";
-		dailyReportForm.clear();
-		dailyReportForm.sendKeys(report);
-		try {
-			submitBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", submitBtn);
-		}
-		wait.until(ExpectedConditions.visibilityOf(submitDailyReportBtn));
+		doSendKeys(dailyReportForm, report);
+		tryClick(submitBtn);
+		waitVisible(submitDailyReportBtn);
 
 		/** 「日報【デモ】を提出する」ボタン > 「提出済み【デモ】を確認する」ボタン*/
 		assertEquals("提出済み日報【デモ】を確認する", submitDailyReportBtn.getAttribute("value"));
@@ -543,19 +578,12 @@ public class Locators {
 	/** Case08*/
 	/** 提出済み週報の確認と変更*/
 	public void clickSubmitted() {
-		wait.until(ExpectedConditions.visibilityOf(submittedStatus));
+		waitVisible(submittedStatus);
 		assertEquals("提出済み", submittedStatus.getText());
 		assertEquals("詳細", submittedDetailBtn.getAttribute("value"));
 
-		try {
-			submittedDetailBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", submittedDetailBtn);
-		}
-
-		wait.until(ExpectedConditions.visibilityOf(courseTitle));
+		tryClick(submittedDetailBtn);
+		waitVisible(courseTitle);
 		assertEquals("コース詳細", courseTitle.getText());
 		assertEquals("セクション詳細", sectionTitle.getText());
 		assertEquals("提出済み週報【デモ】を確認する", submitWeeklyReportBtn.getAttribute("value"));
@@ -564,15 +592,9 @@ public class Locators {
 
 	/** 「提出済み週報【デモ】を提出する」ボタン押下*/
 	public void clickWeeklyReportSubmitBtn() {
-		wait.until(ExpectedConditions.visibilityOf(submitWeeklyReportBtn));
+		waitVisible(submitWeeklyReportBtn);
+		tryClick(submitWeeklyReportBtn);
 
-		try {
-			submitWeeklyReportBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", submitWeeklyReportBtn);
-		}
 		assertEquals("週報【デモ】 2022年10月2日", mainTopTitle.getText());
 		pageLoadTimeout(10);
 	}
@@ -582,25 +604,13 @@ public class Locators {
 	 * @param report 日報内容
 	 */
 	public void submitWeeklyReport() {
-		wait.until(ExpectedConditions.visibilityOf(understandingList));
+		waitVisible(understandingList);
 		;
 		/** 理解度*/
 		/** 理解度ドロップダウンリスト押下*/
-		try {
-			understandingList.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", understandingList);
-		}
+		tryClick(understandingList);
 		/** 理解度選択肢押下*/
-		try {
-			understanding.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", understanding);
-		}
+		tryClick(understanding);
 
 		scrollTo("500");
 		/** 所感*/
@@ -610,26 +620,14 @@ public class Locators {
 				+ "「週報」の入力項目は管理画面のレポート作成機能を用いて設定し、変更されたレポートのフォーマットはデータベースの「m_weekly_report」テーブルに登録されています。";
 
 		/** 目標達成度*/
-		achieveLvl.clear();
-		achieveLvl.sendKeys(ACHIEVE);
-
+		doSendKeys(achieveLvl, ACHIEVE);
 		/** 所感*/
-		impression.clear();
-		impression.sendKeys(impress);
-
+		doSendKeys(impression, impress);
 		/** 一週間の振り返り*/
-		weeklyRevision.clear();
-		weeklyRevision.sendKeys(weekly);
+		doSendKeys(weeklyRevision, weekly);
+		tryClick(submitBtn);
 
-		try {
-			submitBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", submitBtn);
-		}
-
-		wait.until(ExpectedConditions.visibilityOf(courseTitle));
+		waitVisible(courseTitle);
 		assertEquals("コース詳細", courseTitle.getText());
 		assertEquals("セクション詳細", sectionTitle.getText());
 		assertEquals("アルゴリズム、フローチャート 2022年10月2日", mainTopTitle.getText());
@@ -640,16 +638,11 @@ public class Locators {
 	 * 「ようこそ、○○さん」ボタン押下し、ユーザ詳細画面に遷移
 	 */
 	public void gotoUserDetail() {
-		wait.until(ExpectedConditions.visibilityOf(userDetailBtn));
+		waitVisible(userDetailBtn);
 		/** 「ようこそ、○○さん」ボタン押下*/
-		try {
-			userDetailBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", userDetailBtn);
-		}
-		wait.until(ExpectedConditions.visibilityOf(subTopTitle));
+		tryClick(userDetailBtn);
+
+		waitVisible(subTopTitle);
 		assertEquals("ユーザー詳細", mainTopTitle.getText());
 		assertEquals("基本情報", subTopTitle.getText());
 		pageLoadTimeout(10);
@@ -664,13 +657,7 @@ public class Locators {
 		assertEquals("週報【デモ】", userWeeklyReportName.getText());
 		assertEquals("詳細", userWeeklyDetailBtn.getAttribute("value"));
 
-		try {
-			userWeeklyDetailBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", userWeeklyDetailBtn);
-		}
+		tryClick(userWeeklyDetailBtn);
 
 		/** レポート詳細画面遷移*/
 		assertEquals(COMPRE_LVL, understandingCheck.getText());
@@ -686,18 +673,12 @@ public class Locators {
 	/** 入力チェック*/
 	/** コース詳細画面から「ようこそ、○○さん」ボタンを押下し、ユーザ詳細画面に遷移*/
 	public void gotoUserDetailFromCourse() {
-		wait.until(ExpectedConditions.visibilityOf(courseName));
+		waitVisible(courseName);
 		assertEquals("DEMOコース 2022年10月1日(土)～2022年10月31日(月)", courseName.getText());
 
-		try {
-			userDetailBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", userDetailBtn);
-		}
+		tryClick(userDetailBtn);
 
-		wait.until(ExpectedConditions.visibilityOf(subTopTitle));
+		waitVisible(subTopTitle);
 		assertEquals("ユーザー詳細", mainTopTitle.getText());
 		assertEquals("基本情報", subTopTitle.getText());
 
@@ -706,13 +687,8 @@ public class Locators {
 
 	/** ユーザ詳細画面から「週報【デモ】」の同じ行の「修正する」ボタンを押下し、レポート登録画面に遷移*/
 	public void gotoWeeklyReportChange() {
-		try {
-			weekReportFixBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", weekReportFixBtn);
-		}
+		tryClick(weekReportFixBtn);
+
 		assertEquals("週報【デモ】 2022年10月2日", mainTopTitle.getText());
 		pageLoadTimeout(10);
 	}
@@ -720,94 +696,43 @@ public class Locators {
 	/** Case09*/
 	/** 各テスト実施前各項目をデフォルトにする*/
 	public void setDefault() {
-		wait.until(ExpectedConditions.visibilityOf(weeklyRevision));
-		curriculum.clear();
-		curriculum.sendKeys(CURRICULUM_DEF);
+		waitVisible(weeklyRevision);
+		doSendKeys(curriculum, CURRICULUM_DEF);
 
-		try {
-			understandingList.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", understandingList);
-		}
-		try {
-			understanding.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", understanding);
-		}
+		tryClick(understandingList);
+		tryClick(understanding);
 
-		achieveLvl.clear();
-		achieveLvl.sendKeys(ACHIEVE_DEF);
+		doSendKeys(achieveLvl, ACHIEVE_DEF);
+		doSendKeys(impression, IMPRESS_DEF);
+		doSendKeys(weeklyRevision, WEEKLY_REVISION_DEF);
 
-		impression.clear();
-		impression.sendKeys(IMPRESS_DEF);
+		tryClick(userDetailBtn);
+		tryClick(weekReportFixBtn);
 
-		weeklyRevision.clear();
-		weeklyRevision.sendKeys(CURRICULUM_DEF);
-
-		try {
-			userDetailBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", userDetailBtn);
-		}
-		try {
-			weekReportFixBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", weekReportFixBtn);
-		}
 	}
 
 	/** Case09Test5*/
 	/** 学習項目が未入力*/
 	public void inputCheckCurriculum() {
-		wait.until(ExpectedConditions.visibilityOf(curriculum));
+		waitVisible(curriculum);
 		curriculum.clear();
 		curriculum.sendKeys(EMPTY);
-		try {
-			submitBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", submitBtn);
-		}
-		wait.until(ExpectedConditions.visibilityOf(errorMsg));
+
+		tryClick(submitBtn);
+		waitVisible(errorMsg);
+		;
 		assertEquals("* 理解度を入力した場合は、学習項目は必須です。", errorMsg.getText());
 	}
 
 	/** Case09Test6*/
 	/** 理解度が未入力*/
 	public void inputCheckUnderstanding() {
-		wait.until(ExpectedConditions.visibilityOf(understandingList));
-		try {
-			understandingList.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", understandingList);
-		}
-		try {
-			understandingEmpty.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", understandingEmpty);
-		}
+		waitVisible(understandingList);
+		tryClick(understandingList);
+		tryClick(understandingEmpty);
+		tryClick(submitBtn);
 
-		try {
-			submitBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", submitBtn);
-		}
-		wait.until(ExpectedConditions.visibilityOf(errorMsg));
+		waitVisible(errorMsg);
 		assertEquals("* 学習項目を入力した場合は、理解度は必須です。", errorMsg.getText());
 	}
 
@@ -817,17 +742,13 @@ public class Locators {
 	 * @param achieveErrorMsg 目標達成度の入力内容によるエラーメッセージ
 	 */
 	void inputCheckAchieve(String achieveKey, String achieveErrorMsg) {
-		wait.until(ExpectedConditions.visibilityOf(achieveLvl));
-		achieveLvl.clear();
-		achieveLvl.sendKeys(achieveKey);
-		try {
-			submitBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", submitBtn);
-		}
-		wait.until(ExpectedConditions.visibilityOf(errorMsg));
+		waitVisible(achieveLvl);
+		;
+		doSendKeys(achieveLvl, achieveKey);
+
+		tryClick(submitBtn);
+
+		waitVisible(errorMsg);
 		assertEquals(achieveErrorMsg, errorMsg.getText());
 	}
 
@@ -848,26 +769,17 @@ public class Locators {
 	/** Case09Test9*/
 	/** 目標の達成度・所感が未入力*/
 	public void inputCheckBothAchieveAndImpressEmpty() {
-		wait.until(ExpectedConditions.visibilityOf(impression));
+		waitVisible(impression);
 
-		achieveLvl.clear();
-		achieveLvl.sendKeys(EMPTY);
-		impression.clear();
-		impression.sendKeys(EMPTY);
+		doSendKeys(achieveLvl, EMPTY);
+		doSendKeys(impression, EMPTY);
 
-		try {
-			submitBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", submitBtn);
-		}
-
+		tryClick(submitBtn);
 		scrollTo("300");
 
 		String achieveErrorMsg = "* 目標の達成度は半角数字で入力してください。";
 		String impressErrorMsg = "* 所感は必須です。";
-		wait.until(ExpectedConditions.visibilityOf(errorMsg));
+		waitVisible(errorMsg);
 		assertEquals(achieveErrorMsg, errorMsg.getText());
 		assertEquals(impressErrorMsg, errorMsgPlus.getText());
 
@@ -876,26 +788,18 @@ public class Locators {
 	/** Case09Test10*/
 	/** 所感・一週間の振り返りが2000文字超*/
 	public void inputCheckBothImpresssionAndWeekReportTooLong() {
-		wait.until(ExpectedConditions.visibilityOf(weeklyRevision));
+		waitVisible(weeklyRevision);
 
-		impression.clear();
-		impression.sendKeys(TOO_LONG);
-		weeklyRevision.clear();
-		weeklyRevision.sendKeys(TOO_LONG);
+		doSendKeys(impression, TOO_LONG);
+		doSendKeys(weeklyRevision, TOO_LONG);
 
-		try {
-			submitBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", submitBtn);
-		}
+		tryClick(submitBtn);
 
 		/** scrollBy()scrollTo()でうまく画面ボトムまでいかないため、Jsで強制スクロール*/
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
 
-		wait.until(ExpectedConditions.visibilityOf(errorMsgPlus));
+		waitVisible(errorMsgPlus);
 		String impressErrorMsg = "* 所感の長さが最大値(2000)を超えています。";
 		String weekReportErrorMsg = "* 一週間の振り返りの長さが最大値(2000)を超えています。";
 
@@ -903,49 +807,91 @@ public class Locators {
 		assertEquals(weekReportErrorMsg, errorMsgPlus.getText());
 	}
 
-	/** Case10
-	 * @throws InterruptedException */
-	public void gotoAttendanceDetail() throws InterruptedException {
-		wait.until(ExpectedConditions.visibilityOf(attendanceDetail));
-		try {
-			attendanceDetail.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", attendanceDetail);
-		}
+	/** Case10*/
+	/**　勤怠管理画面に遷移*/
+	public void gotoAttendanceDetail() {
+		waitVisible(attendanceDetail);
+		tryClick(attendanceDetail);
 
-		Thread.sleep(2000);
-
-		Alert alert = driver.switchTo().alert();
+		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
 		alert.accept();
-		wait.until(ExpectedConditions.visibilityOf(mainTopTitle));
+
+		waitVisible(mainTopTitle);
+		;
 		assertEquals("勤怠管理", mainTopTitle.getText());
 	}
 
-	void doPunch(WebElement punchBtn, WebElement punchCheck) throws InterruptedException {
-		wait.until(ExpectedConditions.visibilityOf(punchBtn));
-		try {
-			punchBtn.click();
-		} catch (Exception e) {
-			//JavaScriptでボタン強制押下
-			org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", punchBtn);
-		}
-		Thread.sleep(2000);
-		Alert alert = driver.switchTo().alert();
+	/**
+	 * 勤怠打刻
+	 * 
+	 * @param punchBtn 打刻ボタン（出勤もしくは退勤ボタン）
+	 * @param punchCheck 打刻成功時のメッセージ
+	 */
+	void doPunch(WebElement punchBtn, WebElement punchCheck) {
+		waitVisible(punchBtn);
+		tryClick(punchBtn);
+
+		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
 		alert.accept();
-		wait.until(ExpectedConditions.visibilityOf(punchCheck));
+
+		waitVisible(punchCheck);
 		assertNotNull(punchCheck.getText());
 		assertEquals("勤怠情報の登録が完了しました。", punchSuccessMsg.getText());
 	}
 
-	public void doPunchIn() throws InterruptedException {
+	/** 出勤ボタン押下*/
+	public void doPunchIn() {
 		doPunch(punchInBtn, punchInCheck);
 	}
 
-	public void doPunchOut() throws InterruptedException {
+	/**　退勤ボタン押下*/
+	public void doPunchOut() {
 		doPunch(punchOutBtn, punchOutCheck);
+	}
+
+	/** Case11*/
+	/** 勤怠直接変更リンク押下*/
+	public void gotoDirectAttendanceFix() {
+		waitVisible(directAttendanceFixLink);
+		tryClick(directAttendanceFixLink);
+
+		waitVisible(doFixedTimeBtn);
+		assertEquals("定時", doFixedTimeBtn.getText());
+	}
+
+	/** 正しく勤怠時間登録*/
+	public void doFixedTime() {
+		tryClick(doFixedTimeBtn);
+		tryClick(doFixedTimeBtnSecond);
+		tryClick(doAttendanceDirectUpdateBtn);
+
+		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+		alert.accept();
+
+		waitVisible(punchSuccessMsg);
+		assertEquals("勤怠情報の登録が完了しました。", punchSuccessMsg.getText());
+
+	}
+
+	/** 出退勤の（時）と（分）のいずれかが空白*/
+	public void doChangeMixedEmptyHourAndMinute() {
+		/** 出勤時間：[(空):00]*/
+		tryClick(punchInHour);
+		tryClick(punchInHourEmpty);
+		tryClick(punchInMinute);
+		tryClick(punchInMinuteZero);
+
+		tryClick(punchOutHour);
+		tryClick(punchOutHourFixed);
+		tryClick(punchOutMinute);
+		tryClick(punchOutMinuteEmpty);
+
+		tryClick(doAttendanceDirectUpdateBtn);
+		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+		alert.accept();
+
+		waitVisible(punchSuccessMsg);
+
 	}
 
 }

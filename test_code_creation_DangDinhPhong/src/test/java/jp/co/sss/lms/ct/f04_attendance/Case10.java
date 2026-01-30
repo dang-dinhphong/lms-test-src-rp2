@@ -77,7 +77,7 @@ public class Case10 {
 	@Test
 	@Order(3)
 	@DisplayName("テスト03 上部メニューの「勤怠」リンクから勤怠管理画面に遷移")
-	void test03() throws InterruptedException {
+	void test03() {
 		locators.gotoAttendanceDetail();
 		getEvidence(new Object() {
 		}, "勤怠管理画面");
@@ -85,12 +85,11 @@ public class Case10 {
 
 	/**
 	 * @author DangDinhPhong
-	 * @throws InterruptedException 
 	 */
 	@Test
 	@Order(4)
 	@DisplayName("テスト04 「出勤」ボタンを押下し出勤時間を登録")
-	void test04() throws InterruptedException {
+	void test04() {
 		locators.doPunchIn();
 		getEvidence(new Object() {
 		}, "勤怠管理画面_出勤");
@@ -98,12 +97,11 @@ public class Case10 {
 
 	/**
 	 * @author DangDinhPhong
-	 * @throws InterruptedException 
 	 */
 	@Test
 	@Order(5)
 	@DisplayName("テスト05 「退勤」ボタンを押下し退勤時間を登録")
-	void test05() throws InterruptedException {
+	void test05() {
 		locators.doPunchOut();
 		getEvidence(new Object() {
 		}, "勤怠管理画面_退勤");
