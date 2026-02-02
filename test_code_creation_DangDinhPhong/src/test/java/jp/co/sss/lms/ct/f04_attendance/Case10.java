@@ -12,7 +12,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import jp.co.sss.lms.ct.util.Locators;
+import jp.co.sss.lms.ct.locators.AttendanceLocator;
+import jp.co.sss.lms.ct.locators.LoginLocator;
 
 /**
  * 結合テスト 勤怠管理機能
@@ -23,7 +24,8 @@ import jp.co.sss.lms.ct.util.Locators;
 @DisplayName("ケース10 受講生 勤怠登録 正常系")
 public class Case10 {
 
-	public Locators locators;
+	private LoginLocator login;
+	private AttendanceLocator attendance;
 
 	/** 前処理 */
 	@BeforeAll
@@ -44,7 +46,8 @@ public class Case10 {
 	@BeforeEach
 	void setUp() {
 		//webDriverをLocatorsに渡して、ページ要素をいつでも使えるように準備
-		this.locators = new Locators(webDriver);
+		this.login = new LoginLocator(webDriver);
+		this.attendance = new AttendanceLocator(webDriver);
 	}
 
 	/**
@@ -54,7 +57,7 @@ public class Case10 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		locators.checkLoginScreen();
+		login.checkLoginScreen();
 		getEvidence(new Object() {
 		}, ACCESS_LMS);
 	}
@@ -66,7 +69,7 @@ public class Case10 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		locators.login();
+		login.login();
 		getEvidence(new Object() {
 		}, COURSE_DETAIL);
 	}
@@ -78,7 +81,7 @@ public class Case10 {
 	@Order(3)
 	@DisplayName("テスト03 上部メニューの「勤怠」リンクから勤怠管理画面に遷移")
 	void test03() {
-		locators.gotoAttendanceDetail();
+		attendance.gotoAttendanceDetail();
 		getEvidence(new Object() {
 		}, "勤怠管理画面");
 	}
@@ -90,7 +93,7 @@ public class Case10 {
 	@Order(4)
 	@DisplayName("テスト04 「出勤」ボタンを押下し出勤時間を登録")
 	void test04() {
-		locators.doPunchIn();
+		attendance.doPunchIn();
 		getEvidence(new Object() {
 		}, "勤怠管理画面_出勤");
 	}
@@ -102,7 +105,7 @@ public class Case10 {
 	@Order(5)
 	@DisplayName("テスト05 「退勤」ボタンを押下し退勤時間を登録")
 	void test05() {
-		locators.doPunchOut();
+		attendance.doPunchOut();
 		getEvidence(new Object() {
 		}, "勤怠管理画面_退勤");
 	}

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import jp.co.sss.lms.ct.util.Locators;
+import jp.co.sss.lms.ct.locators.LoginLocator;
 
 /**
  * 結合テスト ログイン機能①
@@ -23,7 +23,7 @@ import jp.co.sss.lms.ct.util.Locators;
 @DisplayName("ケース02 受講生 ログイン 認証失敗")
 public class Case02 {
 
-	private Locators locators;
+	private LoginLocator login;
 
 	/** 前処理 */
 	@BeforeAll
@@ -43,7 +43,7 @@ public class Case02 {
 	@BeforeEach
 	void setUp() {
 		//webDriverをLocatorsに渡して、ページ要素をいつでも使えるように準備
-		this.locators = new Locators(webDriver);
+		this.login = new LoginLocator(webDriver);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class Case02 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		locators.checkLoginScreen();
+		login.checkLoginScreen();
 		getEvidence(new Object() {
 		}, ACCESS_LMS);
 	}
@@ -69,7 +69,7 @@ public class Case02 {
 		//Case03からは環境変数使用予定
 		String id = "StudentAA100";
 		String pass = "StudentAA100";
-		locators.loginFail(id, pass);
+		login.loginFail(id, pass);
 		getEvidence(new Object() {
 		}, "ログイン画面_エラーメッセージ表示");
 	}

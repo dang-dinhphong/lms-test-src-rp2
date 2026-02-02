@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import jp.co.sss.lms.ct.util.Locators;
+import jp.co.sss.lms.ct.locators.LoginLocator;
 
 /**
  * 結合テスト ログイン機能①
@@ -23,7 +23,7 @@ import jp.co.sss.lms.ct.util.Locators;
 @DisplayName("ケース03 受講生 ログイン 正常系")
 public class Case03 {
 
-	private Locators locators;
+	private LoginLocator login;
 
 	/** 前処理 */
 	@BeforeAll
@@ -43,7 +43,7 @@ public class Case03 {
 	@BeforeEach
 	void setUp() {
 		//webDriverをLocatorsに渡して、ページ要素をいつでも使えるように準備
-		this.locators = new Locators(webDriver);
+		this.login = new LoginLocator(webDriver);
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class Case03 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		locators.checkLoginScreen();
+		login.checkLoginScreen();
 		getEvidence(new Object() {
 		}, ACCESS_LMS);
 	}
@@ -65,7 +65,7 @@ public class Case03 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		locators.login();
+		login.login();
 		getEvidence(new Object() {
 		}, COURSE_DETAIL);
 	}

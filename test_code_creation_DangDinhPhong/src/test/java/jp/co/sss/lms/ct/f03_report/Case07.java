@@ -12,7 +12,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import jp.co.sss.lms.ct.util.Locators;
+import jp.co.sss.lms.ct.locators.LoginLocator;
+import jp.co.sss.lms.ct.locators.ReportLocator;
 
 /**
  * 結合テスト レポート機能
@@ -23,7 +24,8 @@ import jp.co.sss.lms.ct.util.Locators;
 @DisplayName("ケース07 受講生 レポート新規登録(日報) 正常系")
 public class Case07 {
 
-	public Locators locators;
+	private LoginLocator login;
+	private ReportLocator report;
 
 	/** 前処理 */
 	@BeforeAll
@@ -44,7 +46,8 @@ public class Case07 {
 	@BeforeEach
 	void setUp() {
 		//webDriverをLocatorsに渡して、ページ要素をいつでも使えるように準備
-		this.locators = new Locators(webDriver);
+		this.login = new LoginLocator(webDriver);
+		this.report = new ReportLocator(webDriver);
 	}
 
 	/**
@@ -54,7 +57,7 @@ public class Case07 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		locators.checkLoginScreen();
+		login.checkLoginScreen();
 		getEvidence(new Object() {
 		}, ACCESS_LMS);
 	}
@@ -66,7 +69,7 @@ public class Case07 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		locators.login();
+		login.login();
 		getEvidence(new Object() {
 		}, COURSE_DETAIL);
 	}
@@ -75,7 +78,7 @@ public class Case07 {
 	@Order(3)
 	@DisplayName("テスト03 未提出の研修日の「詳細」ボタンを押下しセクション詳細画面に遷移")
 	void test03() {
-		locators.clickUnsubmitted();
+		report.clickUnsubmitted();
 		getEvidence(new Object() {
 		}, "セクション詳細画面_未提出_ボタン名");
 	}
@@ -84,7 +87,7 @@ public class Case07 {
 	@Order(4)
 	@DisplayName("テスト04 「提出する」ボタンを押下しレポート登録画面に遷移")
 	void test04() {
-		locators.clickDailyReportSubmitBtn();
+		report.clickDailyReportSubmitBtn();
 		pageLoadTimeout(10);
 		getEvidence(new Object() {
 		}, "レポート登録画面");
@@ -94,7 +97,7 @@ public class Case07 {
 	@Order(5)
 	@DisplayName("テスト05 報告内容を入力して「提出する」ボタンを押下し確認ボタン名が更新される")
 	void test05() {
-		locators.submitDailyReport();
+		report.submitDailyReport();
 		getEvidence(new Object() {
 		}, "セクション詳細画面_提出済み_ボタン名変更");
 	}

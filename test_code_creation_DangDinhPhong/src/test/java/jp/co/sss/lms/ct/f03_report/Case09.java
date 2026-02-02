@@ -12,7 +12,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import jp.co.sss.lms.ct.util.Locators;
+import jp.co.sss.lms.ct.locators.LoginLocator;
+import jp.co.sss.lms.ct.locators.ReportLocator;
 
 /**
  * 結合テスト レポート機能
@@ -23,7 +24,8 @@ import jp.co.sss.lms.ct.util.Locators;
 @DisplayName("ケース09 受講生 レポート登録 入力チェック")
 public class Case09 {
 
-	public Locators locators;
+	private LoginLocator login;
+	private ReportLocator report;
 
 	/** 前処理 */
 	@BeforeAll
@@ -44,7 +46,8 @@ public class Case09 {
 	@BeforeEach
 	void setUp() {
 		//webDriverをLocatorsに渡して、ページ要素をいつでも使えるように準備
-		this.locators = new Locators(webDriver);
+		this.login = new LoginLocator(webDriver);
+		this.report = new ReportLocator(webDriver);
 	}
 
 	/**
@@ -54,7 +57,7 @@ public class Case09 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		locators.checkLoginScreen();
+		login.checkLoginScreen();
 		getEvidence(new Object() {
 		}, ACCESS_LMS);
 	}
@@ -66,7 +69,7 @@ public class Case09 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		locators.login();
+		login.login();
 		getEvidence(new Object() {
 		}, COURSE_DETAIL);
 	}
@@ -78,7 +81,7 @@ public class Case09 {
 	@Order(3)
 	@DisplayName("テスト03 上部メニューの「ようこそ○○さん」リンクからユーザー詳細画面に遷移")
 	void test03() {
-		locators.gotoUserDetailFromCourse();
+		report.gotoUserDetailFromCourse();
 		getEvidence(new Object() {
 		}, "ユーザ詳細画面");
 
@@ -91,7 +94,7 @@ public class Case09 {
 	@Order(4)
 	@DisplayName("テスト04 該当レポートの「修正する」ボタンを押下しレポート登録画面に遷移")
 	void test04() {
-		locators.gotoWeeklyReportChange();
+		report.gotoWeeklyReportChange();
 		getEvidence(new Object() {
 		}, "レポート登録画面_週報_修正");
 	}
@@ -104,9 +107,9 @@ public class Case09 {
 	@DisplayName("テスト05 報告内容を修正して「提出する」ボタンを押下しエラー表示：学習項目が未入力")
 	void test05() {
 		/** 週報項目を一旦デフォルトにする*/
-		locators.setDefault();
+		report.setDefault();
 
-		locators.inputCheckCurriculum();
+		report.inputCheckCurriculum();
 		getEvidence(new Object() {
 		}, "レポート登録画面_週報_修正_学習項目_未入力_エラーメッセージ");
 	}
@@ -119,9 +122,9 @@ public class Case09 {
 	@DisplayName("テスト06 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：理解度が未入力")
 	void test06() {
 		/** 週報項目を一旦デフォルトにする*/
-		locators.setDefault();
+		report.setDefault();
 
-		locators.inputCheckUnderstanding();
+		report.inputCheckUnderstanding();
 		getEvidence(new Object() {
 		}, "レポート登録画面_週報_修正_理解度_未入力_エラーメッセージ");
 	}
@@ -134,9 +137,9 @@ public class Case09 {
 	@DisplayName("テスト07 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度が数値以外")
 	void test07() {
 		/** 週報項目を一旦デフォルトにする*/
-		locators.setDefault();
+		report.setDefault();
 
-		locators.inputCheckAchieveNotNum();
+		report.inputCheckAchieveNotNum();
 		getEvidence(new Object() {
 		}, "レポート登録画面_週報_修正_目標達成度_数値以外_エラーメッセージ");
 	}
@@ -149,9 +152,9 @@ public class Case09 {
 	@DisplayName("テスト08 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度が範囲外")
 	void test08() {
 		/** 週報項目を一旦デフォルトにする*/
-		locators.setDefault();
+		report.setDefault();
 
-		locators.inputCheckAchieveOutOfRange();
+		report.inputCheckAchieveOutOfRange();
 		getEvidence(new Object() {
 		}, "レポート登録画面_週報_修正_目標達成度_範囲外_エラーメッセージ");
 	}
@@ -164,9 +167,9 @@ public class Case09 {
 	@DisplayName("テスト09 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：目標の達成度・所感が未入力")
 	void test09() {
 		/** 週報項目を一旦デフォルトにする*/
-		locators.setDefault();
+		report.setDefault();
 
-		locators.inputCheckBothAchieveAndImpressEmpty();
+		report.inputCheckBothAchieveAndImpressEmpty();
 		getEvidence(new Object() {
 		}, "レポート登録画面_週報_修正_目標の達成度・所感_未入力_エラーメッセージ");
 	}
@@ -179,9 +182,9 @@ public class Case09 {
 	@DisplayName("テスト10 不適切な内容で修正して「提出する」ボタンを押下しエラー表示：所感・一週間の振り返りが2000文字超")
 	void test10() {
 		/** 週報項目を一旦デフォルトにする*/
-		locators.setDefault();
+		report.setDefault();
 
-		locators.inputCheckBothImpresssionAndWeekReportTooLong();
+		report.inputCheckBothImpresssionAndWeekReportTooLong();
 		getEvidence(new Object() {
 		}, "レポート登録画面_週報_修正_所感・一週間の振り返り_2000文字超_エラーメッセージ");
 

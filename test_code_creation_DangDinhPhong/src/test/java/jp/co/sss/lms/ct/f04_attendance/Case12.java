@@ -12,7 +12,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import jp.co.sss.lms.ct.util.Locators;
+import jp.co.sss.lms.ct.locators.AttendanceLocator;
+import jp.co.sss.lms.ct.locators.LoginLocator;
 
 /**
  * 結合テスト 勤怠管理機能
@@ -23,7 +24,8 @@ import jp.co.sss.lms.ct.util.Locators;
 @DisplayName("ケース12 受講生 勤怠直接編集 入力チェック")
 public class Case12 {
 
-	public Locators locators;
+	private LoginLocator login;
+	private AttendanceLocator attendance;
 
 	/** 前処理 */
 	@BeforeAll
@@ -44,7 +46,8 @@ public class Case12 {
 	@BeforeEach
 	void setUp() {
 		//webDriverをLocatorsに渡して、ページ要素をいつでも使えるように準備
-		this.locators = new Locators(webDriver);
+		this.login = new LoginLocator(webDriver);
+		this.attendance = new AttendanceLocator(webDriver);
 	}
 
 	/**
@@ -54,7 +57,7 @@ public class Case12 {
 	@Order(1)
 	@DisplayName("テスト01 トップページURLでアクセス")
 	void test01() {
-		locators.checkLoginScreen();
+		login.checkLoginScreen();
 		getEvidence(new Object() {
 		}, ACCESS_LMS);
 	}
@@ -66,7 +69,7 @@ public class Case12 {
 	@Order(2)
 	@DisplayName("テスト02 初回ログイン済みの受講生ユーザーでログイン")
 	void test02() {
-		locators.login();
+		login.login();
 		getEvidence(new Object() {
 		}, COURSE_DETAIL);
 	}
@@ -78,7 +81,7 @@ public class Case12 {
 	@Order(3)
 	@DisplayName("テスト03 上部メニューの「勤怠」リンクから勤怠管理画面に遷移")
 	void test03() {
-		locators.gotoAttendanceDetail();
+		attendance.gotoAttendanceDetail();
 		getEvidence(new Object() {
 		}, "勤怠管理画面");
 	}
@@ -90,7 +93,7 @@ public class Case12 {
 	@Order(4)
 	@DisplayName("テスト04 「勤怠情報を直接編集する」リンクから勤怠情報直接変更画面に遷移")
 	void test04() {
-		locators.gotoDirectAttendanceFix();
+		attendance.gotoDirectAttendanceFix();
 		getEvidence(new Object() {
 		}, "勤怠情報直接変更画面");
 	}
@@ -99,7 +102,7 @@ public class Case12 {
 	@Order(5)
 	@DisplayName("テスト05 不適切な内容で修正してエラー表示：出退勤の（時）と（分）のいずれかが空白")
 	void test05() {
-		locators.doChangeMixedEmptyHourAndMinute();
+		attendance.doChangeMixedEmptyHourAndMinute();
 		getEvidence(new Object() {
 		}, "勤怠情報直接変更画面_出退勤_空白");
 	}
@@ -108,7 +111,7 @@ public class Case12 {
 	@Order(6)
 	@DisplayName("テスト06 不適切な内容で修正してエラー表示：出勤が空白で退勤に入力あり")
 	void test06() {
-		locators.doChangeEmptyPunchIn();
+		attendance.doChangeEmptyPunchIn();
 		getEvidence(new Object() {
 		}, "勤怠情報直接変更画面_出勤空白_退勤あり");
 	}
@@ -117,7 +120,7 @@ public class Case12 {
 	@Order(7)
 	@DisplayName("テスト07 不適切な内容で修正してエラー表示：出勤が退勤よりも遅い時間")
 	void test07() {
-		locators.doChangeWrongLogicTime();
+		attendance.doChangeWrongLogicTime();
 		getEvidence(new Object() {
 		}, "勤怠情報直接変更画面_出勤が退勤よりも遅い時間");
 	}
@@ -126,7 +129,7 @@ public class Case12 {
 	@Order(8)
 	@DisplayName("テスト08 不適切な内容で修正してエラー表示：出退勤時間を超える中抜け時間")
 	void test08() {
-		locators.doChangeTooLongIntermission();
+		attendance.doChangeTooLongIntermission();
 		getEvidence(new Object() {
 		}, "勤怠情報直接変更画面_勤怠時間を超える中抜け時間");
 	}
@@ -135,7 +138,7 @@ public class Case12 {
 	@Order(9)
 	@DisplayName("テスト09 不適切な内容で修正してエラー表示：備考が100文字超")
 	void test09() {
-		locators.doLongNote();
+		attendance.doLongNote();
 		getEvidence(new Object() {
 		}, "勤怠情報直接変更画面_備考が100文字超");
 	}
